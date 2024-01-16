@@ -1,7 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app/home/data/repositories/repositories.dart';
+import 'app/home/domain/usecases/usecases.dart';
 import 'app/home/home.dart';
 import 'app/product_details/product_details.dart';
 import 'app/splash/splash.dart';
@@ -31,7 +34,17 @@ class AppRoutes {
           transitionDuration: const Duration(milliseconds: 200),
           reverseTransitionDuration: const Duration(milliseconds: 200),
           child: BlocProvider(
-            create: (context) => HomeBloc(),
+            create: (context) {
+              final supabaseClient = Supabase.instance.client;
+              return HomeBloc(
+                fetchCategoryListUseCase: FetchCategoryListUseCase(
+                  repository: SupabaseCategoryRepository(client: supabaseClient),
+                ),
+                fetchProductListUseCase: FetchProductListUseCase(
+                  repository: SupabaseProductRepository(client: supabaseClient),
+                ),
+              );
+            },
             child: const HomePage(),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(

@@ -78,7 +78,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                   // systemOverlayStyle: SystemUiOverlayStyle.dark,
                   foregroundColor: AppColors.lightGrey,
                   actions: [
-                    // TODO: Implementar funcionalidade para favoritar uma moradia
+                    // TODO: Implementar funcionalidade para favoritar um produto
                     Visibility(
                       visible: false,
                       child: Padding(
@@ -147,7 +147,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             scrollDirection: Axis.horizontal,
                             itemCount: mockProduct.photos.length,
                             itemBuilder: (context, index) => GestureDetector(
-                              // TODO: Navegar para a tela de fotos da moradia
+                              // TODO: Navegar para a tela de fotos do produto
                               onTap: () {},
                               child: Hero(
                                 tag: widget.heroKey?.toString() ?? 'hero',
