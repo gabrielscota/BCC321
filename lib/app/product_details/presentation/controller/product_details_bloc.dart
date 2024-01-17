@@ -2,11 +2,16 @@ import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../domain/entities/entities.dart';
+import '../../domain/usecases/usecases.dart';
+
 part '../event/product_details_event.dart';
 part '../state/product_details_state.dart';
 
 class ProductDetailsBloc extends Bloc<ProductDetailsEvent, ProductDetailsState> {
-  ProductDetailsBloc() : super(ProductDetailsInitialState()) {
+  final FetchProductDetailsUseCase fetchProductDetailsUseCase;
+
+  ProductDetailsBloc({required this.fetchProductDetailsUseCase}) : super(ProductDetailsInitialState()) {
     on<ProductDetailsStartedEvent>(_load);
   }
 
@@ -14,9 +19,13 @@ class ProductDetailsBloc extends Bloc<ProductDetailsEvent, ProductDetailsState> 
     if (event is ProductDetailsStartedEvent) {
       emit(ProductDetailsPageLoadingState());
 
-      await Future.delayed(const Duration(seconds: 1));
+      final productResult = await fetchProductDetailsUseCase.call(productId: event.productId);
 
-      emit(ProductDetailsPageLoadedState());
+      if (productResult.isLeft) {
+        return emit(ProductDetailsPageErrorState(message: productResult.left.message));
+      } else if (productResult.isRight) {
+        return emit(ProductDetailsPageLoadedState(product: productResult.right));
+      }
     }
   }
 }

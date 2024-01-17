@@ -1,5 +1,13 @@
 class ProductEntity {
-  final List<String> photos;
+  final String id;
+  final String name;
+  final String description;
+  final int price;
 
-  ProductEntity({required this.photos});
+  ProductEntity({
+    required this.id,
+    required this.name,
+    required this.description,
+    required this.price,
+  });
 }

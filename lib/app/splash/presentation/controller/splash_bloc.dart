@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 part '../event/splash_event.dart';
 part '../state/splash_state.dart';
@@ -14,9 +15,12 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
     if (event is SplashStartedEvent) {
       emit(SplashPageLoadingState());
 
-      await Future.delayed(const Duration(seconds: 2));
+      final SupabaseClient supabase = Supabase.instance.client;
+      final session = supabase.auth.currentSession;
 
-      emit(SplashPageLoadedState());
+      await Future.delayed(const Duration(seconds: 1));
+
+      emit(SplashPageLoadedState(currentSession: session != null ? session.accessToken : ''));
     }
   }
 }

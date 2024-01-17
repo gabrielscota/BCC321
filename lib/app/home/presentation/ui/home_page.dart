@@ -1,14 +1,17 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
+import '../../../../app_routes.dart';
+import '../../../../core/theme/theme.dart';
+import '../../../../shared/extensions/extensions.dart';
+import '../../../../shared/utils/utils.dart';
+import '../../domain/entities/product_entity.dart';
 import '../controller/home_bloc.dart';
-
-class ProductEntity {
-  final List<String> photos;
-
-  ProductEntity({required this.photos});
-}
 
 class HomePage extends StatefulWidget {
   final UniqueKey? heroKey;
@@ -22,12 +25,28 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   late final HomeBloc _bloc;
 
+  late int _currentPageViewIndex;
+  late final PageController _pageController;
+
+  late int _currentCategoryIndex;
+
   @override
   void initState() {
     super.initState();
 
     _bloc = BlocProvider.of<HomeBloc>(context);
     _bloc.add(HomeStartedEvent());
+
+    _currentPageViewIndex = 0;
+    _pageController = PageController(initialPage: _currentPageViewIndex);
+
+    _currentCategoryIndex = 0;
+  }
+
+  void _changePageView(int index) {
+    setState(() {
+      _currentPageViewIndex = index;
+    });
   }
 
   @override
@@ -46,33 +65,213 @@ class _HomePageState extends State<HomePage> {
             final categories = state.categories;
             final products = state.products;
 
-            return Column(
+            return Stack(
               children: [
-                Expanded(
-                  child: CustomScrollView(
-                    slivers: [
-                      SliverAppBar(
-                        backgroundColor: Theme.of(context).colorScheme.background,
-                        elevation: 2,
-                        centerTitle: false,
-                        pinned: true,
-                        titleSpacing: 24,
-                        scrolledUnderElevation: 0,
-                        title: Text(
-                          'BCC321 Shop',
-                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                color: Theme.of(context).colorScheme.onSurface,
-                                fontWeight: FontWeight.w700,
-                              ),
+                PageView(
+                  controller: _pageController,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    RefreshIndicator(
+                      onRefresh: () async {
+                        _bloc.add(HomeStartedEvent());
+                      },
+                      child: CustomScrollView(
+                        physics: const BouncingScrollPhysics(
+                          parent: AlwaysScrollableScrollPhysics(),
                         ),
+                        slivers: [
+                          SliverSafeArea(
+                            top: true,
+                            sliver: MultiSliver(
+                              children: [
+                                SliverToBoxAdapter(
+                                  child: Container(
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                                          child: Text(
+                                            'Categorias',
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                        ),
+                                        SizedBox(
+                                          height: 36,
+                                          child: ListView.separated(
+                                            scrollDirection: Axis.horizontal,
+                                            padding: const EdgeInsets.symmetric(horizontal: 24),
+                                            physics: const BouncingScrollPhysics(),
+                                            separatorBuilder: (context, index) => const SizedBox(width: 12),
+                                            itemCount: categories.length + 1,
+                                            itemBuilder: (context, index) {
+                                              if (index == 0) {
+                                                return Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(24),
+                                                    color: _currentCategoryIndex == index
+                                                        ? Theme.of(context).colorScheme.primary
+                                                        : Colors.transparent,
+                                                    border: Border.all(
+                                                      color: _currentCategoryIndex == index
+                                                          ? Theme.of(context).colorScheme.primary
+                                                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                                                    ),
+                                                  ),
+                                                  padding: const EdgeInsets.symmetric(
+                                                    vertical: 8,
+                                                    horizontal: 16,
+                                                  ),
+                                                  child: Text(
+                                                    'All categories',
+                                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                          color: _currentCategoryIndex == index
+                                                              ? Theme.of(context).colorScheme.onPrimary
+                                                              : Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface
+                                                                  .withOpacity(0.7),
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                );
+                                              }
+
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(24),
+                                                  color: _currentCategoryIndex == index
+                                                      ? Theme.of(context).colorScheme.primary
+                                                      : Colors.transparent,
+                                                  border: Border.all(
+                                                    color: _currentCategoryIndex == index
+                                                        ? Theme.of(context).colorScheme.primary
+                                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                                                  ),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(
+                                                  vertical: 8,
+                                                  horizontal: 16,
+                                                ),
+                                                child: Text(
+                                                  categories[index - 1].name.capitalize(),
+                                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                        color: _currentCategoryIndex == index
+                                                            ? Theme.of(context).colorScheme.onPrimary
+                                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              );
+                                            },
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                SliverPadding(
+                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                                  sliver: MultiSliver(
+                                    children: [
+                                      SliverToBoxAdapter(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(0, 24, 0, 16),
+                                          child: Text(
+                                            'Produtos',
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                        ),
+                                      ),
+                                      SliverAnimatedGrid(
+                                        gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
+                                          maxCrossAxisExtent: 200,
+                                          // mainAxisExtent: 128,
+                                          mainAxisSpacing: 16,
+                                          crossAxisSpacing: 16,
+                                          // childAspectRatio: 0.7,
+                                        ),
+                                        initialItemCount: products.length,
+                                        itemBuilder: (context, index, animation) {
+                                          return FadeTransition(
+                                            opacity: animation,
+                                            child: GestureDetector(
+                                              onTap: () {
+                                                context.push(
+                                                  '${AppRoutes.product}/${products[index].id}',
+                                                );
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  color: Colors.grey.shade100,
+                                                ),
+                                                padding: const EdgeInsets.all(16),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    // Expanded(
+                                                    //   child: Container(
+                                                    //     decoration: BoxDecoration(
+                                                    //       borderRadius: BorderRadius.circular(8),
+                                                    //       color: Colors.grey.shade100,
+                                                    //     ),
+                                                    //   ),
+                                                    // ),
+                                                    // const SizedBox(height: 8),
+                                                    Text(
+                                                      products[index].name,
+                                                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                            color: Theme.of(context).colorScheme.onSurface,
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      maxLines: 2,
+                                                    ),
+                                                    Text(
+                                                      CurrencyFormat.formatCentsToReal(products[index].price),
+                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                            color: Theme.of(context)
+                                                                .colorScheme
+                                                                .onSurface
+                                                                .withOpacity(0.5),
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      maxLines: 1,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            ),
+                                            // child: OldProductItem(product: products[index]),
+                                          );
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                       ),
-                      SliverSafeArea(
-                        top: false,
-                        sliver: MultiSliver(
-                          children: [
-                            SliverToBoxAdapter(
-                              child: AspectRatio(
-                                aspectRatio: 2,
+                    ),
+                    CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        SliverSafeArea(
+                          top: true,
+                          sliver: MultiSliver(
+                            children: [
+                              SliverToBoxAdapter(
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(vertical: 16),
                                   child: Column(
@@ -81,151 +280,154 @@ class _HomePageState extends State<HomePage> {
                                       Padding(
                                         padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
                                         child: Text(
-                                          'Categorias',
-                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                          'Sacola',
+                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w700,
                                               ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ListView.separated(
-                                          scrollDirection: Axis.horizontal,
-                                          padding: const EdgeInsets.symmetric(horizontal: 24),
-                                          physics: const BouncingScrollPhysics(),
-                                          separatorBuilder: (context, index) => const SizedBox(width: 12),
-                                          itemCount: categories.length,
-                                          itemBuilder: (context, index) {
-                                            return Container(
-                                              width: 100,
-                                              decoration: BoxDecoration(
-                                                borderRadius: BorderRadius.circular(8),
-                                                color: Colors.grey.shade100,
-                                              ),
-                                              child: Column(
-                                                mainAxisAlignment: MainAxisAlignment.center,
-                                                children: [
-                                                  Container(
-                                                    height: 50,
-                                                    width: 50,
-                                                    decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(8),
-                                                      color: Colors.grey.shade200,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 12),
-                                                  Text(
-                                                    categories[index].name,
-                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                          color: Theme.of(context).colorScheme.onSurface,
-                                                          fontWeight: FontWeight.w400,
-                                                        ),
-                                                  ),
-                                                ],
-                                              ),
-                                            );
-                                          },
                                         ),
                                       ),
                                     ],
                                   ),
                                 ),
                               ),
-                            ),
-                            SliverPadding(
-                              padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                              sliver: MultiSliver(
-                                children: [
-                                  SliverToBoxAdapter(
-                                    child: Padding(
-                                      padding: const EdgeInsets.fromLTRB(0, 24, 0, 16),
-                                      child: Text(
-                                        'Produtos populares',
-                                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                      ),
-                                    ),
-                                  ),
-                                  SliverAnimatedGrid(
-                                    gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                      maxCrossAxisExtent: 200,
-                                      mainAxisSpacing: 16,
-                                      crossAxisSpacing: 16,
-                                      childAspectRatio: 0.7,
-                                    ),
-                                    initialItemCount: products.length,
-                                    itemBuilder: (context, index, animation) {
-                                      return FadeTransition(
-                                        opacity: animation,
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Expanded(
-                                              child: Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(8),
-                                                  color: Colors.grey.shade100,
-                                                ),
-                                              ),
-                                            ),
-                                            const SizedBox(height: 8),
-                                            Text(
-                                              products[index].name,
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                    color: Theme.of(context).colorScheme.onSurface,
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                            ),
-                                            Text(
-                                              'R\$ ${products[index].price}',
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                                    fontWeight: FontWeight.w500,
-                                                  ),
-                                            ),
-                                          ],
-                                        ),
-                                      );
-                                    },
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
-                      ),
-                    ],
-                  ),
-                ),
-                BottomNavigationBar(
-                  elevation: 8,
-                  backgroundColor: Theme.of(context).colorScheme.background,
-                  showUnselectedLabels: true,
-                  selectedItemColor: Theme.of(context).colorScheme.primary,
-                  unselectedItemColor: Theme.of(context).colorScheme.onSurface.withOpacity(0.3),
-                  type: BottomNavigationBarType.fixed,
-                  items: const <BottomNavigationBarItem>[
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.home),
-                      label: 'Inicio',
+                      ],
                     ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.search),
-                      label: 'Buscar',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.shopping_bag),
-                      label: 'Sacola',
-                    ),
-                    BottomNavigationBarItem(
-                      icon: Icon(Icons.person),
-                      label: 'Perfil',
+                    CustomScrollView(
+                      physics: const BouncingScrollPhysics(),
+                      slivers: [
+                        SliverSafeArea(
+                          top: true,
+                          sliver: MultiSliver(
+                            children: [
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 16),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Padding(
+                                        padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                                        child: Text(
+                                          'Perfil',
+                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ],
-                  currentIndex: 0,
-                  onTap: (value) => _bloc.add(HomeStartedEvent()),
+                ),
+                SafeArea(
+                  top: false,
+                  child: Align(
+                    alignment: Alignment.bottomCenter,
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(64),
+                      child: BackdropFilter(
+                        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                        child: Container(
+                          decoration: BoxDecoration(
+                            color: Theme.of(context).colorScheme.surface.withOpacity(.7),
+                            border: Border.all(
+                              color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
+                            ),
+                            borderRadius: BorderRadius.circular(64),
+                          ),
+                          padding: const EdgeInsets.all(8),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  _changePageView(0);
+                                  _pageController.jumpToPage(0);
+                                },
+                                child: Container(
+                                  height: 48,
+                                  width: 48,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(24),
+                                    color: _currentPageViewIndex == 0
+                                        ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                        : Colors.transparent,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  child: SvgPicture.asset(
+                                    AppIcons.home,
+                                    color: _currentPageViewIndex == 0
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              InkWell(
+                                onTap: () {
+                                  _changePageView(1);
+                                  _pageController.jumpToPage(1);
+                                },
+                                child: Container(
+                                  height: 48,
+                                  width: 48,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(24),
+                                    color: _currentPageViewIndex == 1
+                                        ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                        : Colors.transparent,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  child: SvgPicture.asset(
+                                    AppIcons.shoppingBag,
+                                    color: _currentPageViewIndex == 1
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              InkWell(
+                                onTap: () {
+                                  _changePageView(2);
+                                  _pageController.jumpToPage(2);
+                                },
+                                child: Container(
+                                  height: 48,
+                                  width: 48,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(24),
+                                    color: _currentPageViewIndex == 2
+                                        ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                        : Colors.transparent,
+                                  ),
+                                  padding: const EdgeInsets.all(10),
+                                  child: SvgPicture.asset(
+                                    AppIcons.profile,
+                                    color: _currentPageViewIndex == 2
+                                        ? Theme.of(context).colorScheme.primary
+                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
                 ),
               ],
             );
@@ -260,6 +462,47 @@ class _HomePageState extends State<HomePage> {
           }
         },
       ),
+    );
+  }
+}
+
+class OldProductItem extends StatelessWidget {
+  final ProductEntity product;
+
+  const OldProductItem({
+    super.key,
+    required this.product,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Expanded(
+          child: Container(
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(8),
+              color: Colors.grey.shade100,
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Text(
+          product.name,
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface,
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+        Text(
+          'R\$ ${product.price}',
+          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                fontWeight: FontWeight.w500,
+              ),
+        ),
+      ],
     );
   }
 }

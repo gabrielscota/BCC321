@@ -32,7 +32,12 @@ class _SplashPageState extends State<SplashPage> {
       body: BlocConsumer<SplashBloc, SplashState>(
         listener: (context, state) {
           if (state is SplashPageLoadedState) {
-            context.go(AppRoutes.home);
+            print(state.currentSession);
+            if (state.currentSession.isNotEmpty) {
+              context.go(AppRoutes.home);
+            } else {
+              context.go(AppRoutes.signIn);
+            }
           }
         },
         builder: (context, state) {

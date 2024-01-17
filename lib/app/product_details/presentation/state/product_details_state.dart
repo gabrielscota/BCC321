@@ -6,6 +6,14 @@ class ProductDetailsInitialState extends ProductDetailsState {}
 
 class ProductDetailsPageLoadingState extends ProductDetailsState {}
 
-class ProductDetailsPageLoadedState extends ProductDetailsState {}
+class ProductDetailsPageLoadedState extends ProductDetailsState {
+  final ProductEntity product;
 
-class ProductDetailsPageErrorState extends ProductDetailsState {}
+  ProductDetailsPageLoadedState({required this.product});
+}
+
+class ProductDetailsPageErrorState extends ProductDetailsState {
+  final String message;
+
+  ProductDetailsPageErrorState({required this.message});
+}

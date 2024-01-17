@@ -2,7 +2,7 @@ class ProductEntity {
   final String id;
   final String name;
   final String description;
-  final String price;
+  final int price;
 
   ProductEntity({
     required this.id,
