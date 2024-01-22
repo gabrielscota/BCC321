@@ -7,10 +7,17 @@ class HomeInitialState extends HomeState {}
 class HomePageLoadingState extends HomeState {}
 
 class HomePageLoadedState extends HomeState {
+  final UserEntity user;
   final List<CategoryEntity> categories;
   final List<ProductEntity> products;
+  final List<SellerEntity> sellers;
 
-  HomePageLoadedState({this.categories = const [], this.products = const []});
+  HomePageLoadedState({
+    required this.user,
+    this.categories = const [],
+    this.products = const [],
+    this.sellers = const [],
+  });
 }
 
 class HomePageErrorState extends HomeState {

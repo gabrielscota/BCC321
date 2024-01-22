@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -62,8 +63,10 @@ class _HomePageState extends State<HomePage> {
               child: CircularProgressIndicator(),
             );
           } else if (state is HomePageLoadedState) {
+            final user = state.user;
             final categories = state.categories;
             final products = state.products;
+            final sellers = state.sellers;
 
             return Stack(
               children: [
@@ -87,6 +90,102 @@ class _HomePageState extends State<HomePage> {
                                 SliverToBoxAdapter(
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(vertical: 16),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      children: [
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                                          child: Text(
+                                            'Olá, ${user.name.split(' ').first} 👋',
+                                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsets.fromLTRB(24, 0, 24, 12),
+                                          child: Text(
+                                            'O que você está procurando hoje?',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ),
+                                MultiSliver(
+                                  children: [
+                                    SliverToBoxAdapter(
+                                      child: Padding(
+                                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
+                                        child: Text(
+                                          'Lojas',
+                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                color: Colors.black,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                        ),
+                                      ),
+                                    ),
+                                    SliverToBoxAdapter(
+                                      child: SizedBox(
+                                        height: 72,
+                                        child: ListView.separated(
+                                          scrollDirection: Axis.horizontal,
+                                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                                          physics: const BouncingScrollPhysics(),
+                                          separatorBuilder: (context, index) => const SizedBox(width: 12),
+                                          itemCount: sellers.length,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                context.push(
+                                                  '${AppRoutes.shop}/${sellers[index].id}',
+                                                );
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(8),
+                                                  color: Colors.grey.shade100,
+                                                ),
+                                                padding: const EdgeInsets.all(16),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    // Expanded(
+                                                    //   child: Container(
+                                                    //     decoration: BoxDecoration(
+                                                    //       borderRadius: BorderRadius.circular(8),
+                                                    //       color: Colors.grey.shade100,
+                                                    //     ),
+                                                    //   ),
+                                                    // ),
+                                                    // const SizedBox(height: 8),
+                                                    Text(
+                                                      sellers[index].shopName,
+                                                      style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                            color: Theme.of(context).colorScheme.onSurface,
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      maxLines: 1,
+                                                    ),
+                                                  ],
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SliverToBoxAdapter(
+                                  child: Container(
+                                    padding: const EdgeInsets.fromLTRB(0, 32, 0, 16),
                                     child: Column(
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
@@ -320,6 +419,66 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ),
                                     ],
+                                  ),
+                                ),
+                              ),
+                              SliverToBoxAdapter(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 16),
+                                  child: Row(
+                                    crossAxisAlignment: CrossAxisAlignment.center,
+                                    children: [
+                                      Container(
+                                        height: 64,
+                                        width: 64,
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(64),
+                                          color: Colors.grey.shade100,
+                                        ),
+                                        child: CachedNetworkImage(
+                                          imageUrl: user.photoUrl,
+                                          height: 64,
+                                          width: 64,
+                                          fit: BoxFit.cover,
+                                          errorWidget: (context, url, error) => const Icon(Icons.error),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: Padding(
+                                          padding: const EdgeInsets.fromLTRB(16, 0, 24, 8),
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Text(
+                                                user.name.split(' ').first,
+                                                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface,
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                              ),
+                                              Text(
+                                                user.email,
+                                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              SliverPadding(
+                                padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                                sliver: SliverToBoxAdapter(
+                                  child: ElevatedButton(
+                                    onPressed: () {
+                                      context.go(AppRoutes.signIn);
+                                    },
+                                    child: const Text('Sign Out'),
                                   ),
                                 ),
                               ),

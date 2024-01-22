@@ -5,18 +5,18 @@ import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../dto/dto.dart';
 
-class SupabaseProductRepository implements ProductRepository {
+class SupabaseSellerRepository implements SellerRepository {
   final SupabaseClient client;
 
-  SupabaseProductRepository({required this.client});
+  SupabaseSellerRepository({required this.client});
 
   @override
-  Future<List<ProductEntity>> fetchProductList() async {
+  Future<List<SellerEntity>> fetchSellerList() async {
     try {
-      final response = await client.from('product').select();
+      final response = await client.from('seller').select();
       if (response.isNotEmpty) {
-        final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
-        return products;
+        final sellers = response.map((e) => SellerDto.fromMap(e).toEntity()).toList();
+        return sellers;
       } else {
         return [];
       }

@@ -5,20 +5,22 @@ import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../dto/dto.dart';
 
-class SupabaseProductRepository implements ProductRepository {
+class SupabaseUserDetailsRepository implements UserDetailsRepository {
   final SupabaseClient client;
 
-  SupabaseProductRepository({required this.client});
+  SupabaseUserDetailsRepository({required this.client});
 
   @override
-  Future<List<ProductEntity>> fetchProductList() async {
+  Future<UserEntity> fetchUserDetails() async {
     try {
-      final response = await client.from('product').select();
+      final userUUID = client.auth.currentUser?.id;
+
+      final response = await client.from('user').select().eq('uuid', userUUID ?? '').limit(1);
       if (response.isNotEmpty) {
-        final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
-        return products;
+        final user = UserDto.fromMap(response.first).toEntity();
+        return user;
       } else {
-        return [];
+        throw ApiFailure(message: 'No user found');
       }
     } on DtoFailure catch (_) {
       rethrow;
