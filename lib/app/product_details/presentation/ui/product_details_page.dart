@@ -127,6 +127,205 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               ],
                             ),
                           ),
+                          SliverPadding(
+                            padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                            sliver: SliverToBoxAdapter(
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
+                                  borderRadius: BorderRadius.circular(16),
+                                ),
+                                padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 24),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          Row(
+                                            crossAxisAlignment: CrossAxisAlignment.end,
+                                            children: [
+                                              Text.rich(
+                                                TextSpan(
+                                                  children: [
+                                                    const TextSpan(
+                                                      text: '4.6',
+                                                    ),
+                                                    TextSpan(
+                                                      text: ' /5',
+                                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
+                                                            color: Theme.of(context).colorScheme.onSurface,
+                                                            fontWeight: FontWeight.w600,
+                                                          ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface,
+                                                      fontWeight: FontWeight.w700,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                          Text(
+                                            'Baseado em 100 avaliações',
+                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                          ),
+                                          const SizedBox(height: 12),
+                                          const Row(
+                                            children: [
+                                              AppSvgIconComponent(assetName: AppIcons.star),
+                                              AppSvgIconComponent(assetName: AppIcons.star),
+                                              AppSvgIconComponent(assetName: AppIcons.star),
+                                              AppSvgIconComponent(assetName: AppIcons.star),
+                                              AppSvgIconComponent(assetName: AppIcons.star),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                                        children: [
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                '5 Estrela',
+                                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              SizedBox(
+                                                height: 8,
+                                                width: 64,
+                                                child: LinearProgressIndicator(
+                                                  value: .8,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  backgroundColor:
+                                                      Theme.of(context).colorScheme.onSurface.withOpacity(.1),
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                '4 Estrela',
+                                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              SizedBox(
+                                                height: 8,
+                                                width: 64,
+                                                child: LinearProgressIndicator(
+                                                  value: .8,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  backgroundColor:
+                                                      Theme.of(context).colorScheme.onSurface.withOpacity(.1),
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                '3 Estrela',
+                                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              SizedBox(
+                                                height: 8,
+                                                width: 64,
+                                                child: LinearProgressIndicator(
+                                                  value: .8,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  backgroundColor:
+                                                      Theme.of(context).colorScheme.onSurface.withOpacity(.1),
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                '2 Estrela',
+                                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              SizedBox(
+                                                height: 8,
+                                                width: 64,
+                                                child: LinearProgressIndicator(
+                                                  value: .8,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  backgroundColor:
+                                                      Theme.of(context).colorScheme.onSurface.withOpacity(.1),
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          const SizedBox(height: 4),
+                                          Row(
+                                            mainAxisAlignment: MainAxisAlignment.end,
+                                            children: [
+                                              Text(
+                                                '1 Estrela',
+                                                style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              SizedBox(
+                                                height: 8,
+                                                width: 64,
+                                                child: LinearProgressIndicator(
+                                                  value: .8,
+                                                  borderRadius: BorderRadius.circular(10),
+                                                  backgroundColor:
+                                                      Theme.of(context).colorScheme.onSurface.withOpacity(.1),
+                                                  color: Theme.of(context).colorScheme.primary,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          const SliverToBoxAdapter(
+                            child: SizedBox(height: 128),
+                          ),
                         ],
                       ),
                     ),
@@ -134,80 +333,83 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                 ),
                 SafeArea(
                   top: false,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                        child: Container(
-                          margin: const EdgeInsets.fromLTRB(24, 0, 24, 24),
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.primary.withOpacity(.6),
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 24),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                          child: Container(
+                            margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.primary.withOpacity(.6),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
+                              ),
+                              borderRadius: BorderRadius.circular(16),
                             ),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
-                          child: SizedBox(
-                            height: 64,
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    decoration: const BoxDecoration(
-                                      borderRadius: BorderRadius.horizontal(left: Radius.circular(16)),
+                            child: SizedBox(
+                              height: 64,
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      decoration: const BoxDecoration(
+                                        borderRadius: BorderRadius.horizontal(left: Radius.circular(16)),
+                                      ),
+                                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            CurrencyFormat.formatCentsToReal(state.product.price),
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onPrimary,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                            textAlign: TextAlign.start,
+                                          ),
+                                          Text(
+                                            'Preço por unidade',
+                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(.6),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                            textAlign: TextAlign.start,
+                                            maxLines: 1,
+                                          ),
+                                        ],
+                                      ),
                                     ),
-                                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          CurrencyFormat.formatCentsToReal(state.product.price),
+                                  ),
+                                  Expanded(
+                                    flex: 2,
+                                    child: InkWell(
+                                      child: Container(
+                                        decoration: BoxDecoration(
+                                          borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
+                                          color: Theme.of(context).colorScheme.primary,
+                                        ),
+                                        alignment: Alignment.center,
+                                        child: Text(
+                                          'Comprar',
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                                 color: Theme.of(context).colorScheme.onPrimary,
                                                 fontWeight: FontWeight.w700,
                                               ),
-                                          textAlign: TextAlign.start,
+                                          textAlign: TextAlign.center,
                                         ),
-                                        Text(
-                                          'Preço por unidade',
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Theme.of(context).colorScheme.onPrimary.withOpacity(.6),
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                          textAlign: TextAlign.start,
-                                          maxLines: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: InkWell(
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
-                                        color: Theme.of(context).colorScheme.primary,
-                                      ),
-                                      alignment: Alignment.center,
-                                      child: Text(
-                                        'Comprar',
-                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                              color: Theme.of(context).colorScheme.onPrimary,
-                                              fontWeight: FontWeight.w700,
-                                            ),
-                                        textAlign: TextAlign.center,
                                       ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                ],
+                              ),
                             ),
                           ),
                         ),

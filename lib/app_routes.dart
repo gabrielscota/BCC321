@@ -28,8 +28,8 @@ class AppRoutes {
       GoRoute(
         path: AppRoutes.home,
         pageBuilder: (context, state) => CustomTransitionPage(
-          transitionDuration: const Duration(milliseconds: 200),
-          reverseTransitionDuration: const Duration(milliseconds: 200),
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
           child: BlocProvider(
             create: (context) {
               final supabaseClient = Supabase.instance.client;
@@ -64,8 +64,8 @@ class AppRoutes {
       GoRoute(
         path: '${AppRoutes.product}/:productId',
         pageBuilder: (context, state) => CustomTransitionPage(
-          transitionDuration: const Duration(milliseconds: 200),
-          reverseTransitionDuration: const Duration(milliseconds: 200),
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
           child: BlocProvider(
             create: (context) => ProductDetailsBloc(
               fetchProductDetailsUseCase: FetchProductDetailsUseCase(
@@ -85,8 +85,8 @@ class AppRoutes {
       GoRoute(
         path: '${AppRoutes.shop}/:sellerId',
         pageBuilder: (context, state) => CustomTransitionPage(
-          transitionDuration: const Duration(milliseconds: 200),
-          reverseTransitionDuration: const Duration(milliseconds: 200),
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
           child: BlocProvider(
             create: (context) => ShopBloc(
               fetchSellerDetailsUseCase: FetchSellerDetailsUseCase(
