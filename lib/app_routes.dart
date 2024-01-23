@@ -5,6 +5,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/home/home.dart';
 import 'app/product_details/product_details.dart';
+import 'app/seller/seller.dart';
 import 'app/shop/shop.dart';
 import 'app/sign_in/sign_in.dart';
 import 'app/sign_up/sign_up.dart';
@@ -13,6 +14,7 @@ import 'app/splash/splash.dart';
 class AppRoutes {
   static const String home = '/home';
   static const String product = '/product';
+  static const String seller = '/seller';
   static const String shop = '/shop';
   static const String signIn = '/sign-in';
   static const String signUp = '/sign-up';
@@ -83,17 +85,41 @@ class AppRoutes {
         ),
       ),
       GoRoute(
+        path: '${AppRoutes.seller}/:sellerId',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => SellerBloc(
+              fetchCategoryListUseCase: FetchSellerCategoryListUseCase(
+                repository: SupabaseSellerCategoryRepository(client: Supabase.instance.client),
+              ),
+              fetchSellerProductListUseCase: FetchSellerProductListUseCase(
+                repository: SupabaseSellerProductRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: SellerPage(sellerId: state.pathParameters['sellerId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
         path: '${AppRoutes.shop}/:sellerId',
         pageBuilder: (context, state) => CustomTransitionPage(
           transitionDuration: const Duration(milliseconds: 100),
           reverseTransitionDuration: const Duration(milliseconds: 100),
           child: BlocProvider(
             create: (context) => ShopBloc(
-              fetchSellerDetailsUseCase: FetchSellerDetailsUseCase(
-                repository: SupabaseSellerDetailsRepository(client: Supabase.instance.client),
+              fetchSellerDetailsUseCase: FetchShopDetailsUseCase(
+                repository: SupabaseShopDetailsRepository(client: Supabase.instance.client),
               ),
-              fetchSellerProductListUseCase: FetchSellerProductListUseCase(
-                repository: SupabaseSellerProductRepository(client: Supabase.instance.client),
+              fetchSellerProductListUseCase: FetchShopProductListUseCase(
+                repository: SupabaseShopProductRepository(client: Supabase.instance.client),
               ),
             ),
             child: ShopPage(sellerId: state.pathParameters['sellerId']!),

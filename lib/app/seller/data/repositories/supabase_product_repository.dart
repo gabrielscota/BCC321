@@ -1,7 +1,7 @@
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/errors/errors.dart';
-import '../../domain/entities/product_entity.dart';
+import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../dto/dto.dart';
 

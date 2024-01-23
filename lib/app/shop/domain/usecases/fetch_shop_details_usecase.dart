@@ -4,10 +4,10 @@ import '../../../../core/errors/errors.dart';
 import '../entities/entities.dart';
 import '../repositories/repositories.dart';
 
-class FetchSellerDetailsUseCase {
-  final SellerDetailsRepository repository;
+class FetchShopDetailsUseCase {
+  final ShopDetailsRepository repository;
 
-  FetchSellerDetailsUseCase({required this.repository});
+  FetchShopDetailsUseCase({required this.repository});
 
   Future<Either<Failure, SellerEntity>> call({required String sellerId}) async {
     try {

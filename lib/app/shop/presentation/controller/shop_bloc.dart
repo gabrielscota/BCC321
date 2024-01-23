@@ -9,8 +9,8 @@ part '../event/shop_event.dart';
 part '../state/shop_state.dart';
 
 class ShopBloc extends Bloc<ShopEvent, ShopState> {
-  final FetchSellerDetailsUseCase fetchSellerDetailsUseCase;
-  final FetchSellerProductListUseCase fetchSellerProductListUseCase;
+  final FetchShopDetailsUseCase fetchSellerDetailsUseCase;
+  final FetchShopProductListUseCase fetchSellerProductListUseCase;
 
   ShopBloc({
     required this.fetchSellerDetailsUseCase,

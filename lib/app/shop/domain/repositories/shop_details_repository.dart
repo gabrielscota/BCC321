@@ -1,5 +1,5 @@
 import '../entities/entities.dart';
 
-abstract class SellerDetailsRepository {
+abstract class ShopDetailsRepository {
   Future<SellerEntity> fetchSellerDetails({required String sellerId});
 }

@@ -5,10 +5,10 @@ import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../dto/dto.dart';
 
-class SupabaseSellerDetailsRepository implements SellerDetailsRepository {
+class SupabaseShopDetailsRepository implements ShopDetailsRepository {
   final SupabaseClient client;
 
-  SupabaseSellerDetailsRepository({required this.client});
+  SupabaseShopDetailsRepository({required this.client});
 
   @override
   Future<SellerEntity> fetchSellerDetails({required String sellerId}) async {

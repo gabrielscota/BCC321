@@ -1,2 +1,2 @@
-export 'seller_details_repository.dart';
-export 'seller_product_repository.dart';
+export 'shop_details_repository.dart';
+export 'shop_product_repository.dart';

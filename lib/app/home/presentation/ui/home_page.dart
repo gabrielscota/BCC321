@@ -53,6 +53,13 @@ class _HomePageState extends State<HomePage> {
     });
   }
 
+  void _changeCategory(int index) {
+    // TODO: Aplicar filtro de categoria na lista de produtos
+    setState(() {
+      _currentCategoryIndex = index;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -294,7 +301,51 @@ class _HomePageState extends State<HomePage> {
                                             itemCount: categories.length + 1,
                                             itemBuilder: (context, index) {
                                               if (index == 0) {
-                                                return Container(
+                                                return InkWell(
+                                                  onTap: () => _changeCategory(index),
+                                                  splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                  highlightColor:
+                                                      Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                  borderRadius: BorderRadius.circular(24),
+                                                  child: Container(
+                                                    decoration: BoxDecoration(
+                                                      borderRadius: BorderRadius.circular(24),
+                                                      color: _currentCategoryIndex == index
+                                                          ? Theme.of(context).colorScheme.primary
+                                                          : Colors.transparent,
+                                                      border: Border.all(
+                                                        color: _currentCategoryIndex == index
+                                                            ? Theme.of(context).colorScheme.primary
+                                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                                                      ),
+                                                    ),
+                                                    padding: const EdgeInsets.symmetric(
+                                                      vertical: 8,
+                                                      horizontal: 16,
+                                                    ),
+                                                    child: Text(
+                                                      'Todas as categorias',
+                                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                            color: _currentCategoryIndex == index
+                                                                ? Theme.of(context).colorScheme.onPrimary
+                                                                : Theme.of(context)
+                                                                    .colorScheme
+                                                                    .onSurface
+                                                                    .withOpacity(0.7),
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  ),
+                                                );
+                                              }
+
+                                              return InkWell(
+                                                onTap: () => _changeCategory(index),
+                                                splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
+                                                borderRadius: BorderRadius.circular(24),
+                                                child: Container(
                                                   decoration: BoxDecoration(
                                                     borderRadius: BorderRadius.circular(24),
                                                     color: _currentCategoryIndex == index
@@ -311,7 +362,7 @@ class _HomePageState extends State<HomePage> {
                                                     horizontal: 16,
                                                   ),
                                                   child: Text(
-                                                    'Todas as categorias',
+                                                    categories[index - 1].name.capitalize(),
                                                     style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                           color: _currentCategoryIndex == index
                                                               ? Theme.of(context).colorScheme.onPrimary
@@ -323,34 +374,6 @@ class _HomePageState extends State<HomePage> {
                                                         ),
                                                     textAlign: TextAlign.center,
                                                   ),
-                                                );
-                                              }
-
-                                              return Container(
-                                                decoration: BoxDecoration(
-                                                  borderRadius: BorderRadius.circular(24),
-                                                  color: _currentCategoryIndex == index
-                                                      ? Theme.of(context).colorScheme.primary
-                                                      : Colors.transparent,
-                                                  border: Border.all(
-                                                    color: _currentCategoryIndex == index
-                                                        ? Theme.of(context).colorScheme.primary
-                                                        : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
-                                                  ),
-                                                ),
-                                                padding: const EdgeInsets.symmetric(
-                                                  vertical: 8,
-                                                  horizontal: 16,
-                                                ),
-                                                child: Text(
-                                                  categories[index - 1].name.capitalize(),
-                                                  style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                        color: _currentCategoryIndex == index
-                                                            ? Theme.of(context).colorScheme.onPrimary
-                                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.7),
-                                                        fontWeight: FontWeight.w500,
-                                                      ),
-                                                  textAlign: TextAlign.center,
                                                 ),
                                               );
                                             },
@@ -515,14 +538,19 @@ class _HomePageState extends State<HomePage> {
                                         width: 64,
                                         decoration: BoxDecoration(
                                           borderRadius: BorderRadius.circular(64),
-                                          color: Colors.grey.shade100,
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(.1),
                                         ),
                                         child: CachedNetworkImage(
                                           imageUrl: user.photoUrl,
                                           height: 64,
                                           width: 64,
                                           fit: BoxFit.cover,
+                                          color: Theme.of(context).colorScheme.primary.withOpacity(.1),
                                           errorWidget: (context, url, error) => Container(
+                                            decoration: BoxDecoration(
+                                              borderRadius: BorderRadius.circular(64),
+                                              color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                            ),
                                             alignment: Alignment.center,
                                             child: Text(
                                               user.name.length > 2
@@ -704,7 +732,88 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                       const SizedBox(height: 16),
                                       InkWell(
-                                        onTap: () {},
+                                        onTap: () {
+                                          showModalBottomSheet(
+                                            context: context,
+                                            backgroundColor: Theme.of(context).colorScheme.background,
+                                            shape: const RoundedRectangleBorder(
+                                              borderRadius: BorderRadius.only(
+                                                topLeft: Radius.circular(24),
+                                                topRight: Radius.circular(24),
+                                              ),
+                                            ),
+                                            useSafeArea: true,
+                                            builder: (context) {
+                                              return Column(
+                                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                mainAxisSize: MainAxisSize.min,
+                                                children: [
+                                                  Row(
+                                                    mainAxisAlignment: MainAxisAlignment.center,
+                                                    children: [
+                                                      Container(
+                                                        margin: const EdgeInsets.symmetric(vertical: 16),
+                                                        height: 4,
+                                                        width: 64,
+                                                        decoration: BoxDecoration(
+                                                          borderRadius: BorderRadius.circular(2),
+                                                          color:
+                                                              Theme.of(context).colorScheme.onSurface.withOpacity(.2),
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                                                    child: Text(
+                                                      'Criar loja',
+                                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                            color: Colors.black,
+                                                            fontWeight: FontWeight.w700,
+                                                          ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                                                    child: Text(
+                                                      'Para criar uma loja, você precisa ser um vendedor.',
+                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                            color:
+                                                                Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      textAlign: TextAlign.center,
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 16),
+                                                  Padding(
+                                                    padding: const EdgeInsets.symmetric(horizontal: 24),
+                                                    child: FilledButton(
+                                                      onPressed: () {},
+                                                      style: FilledButton.styleFrom(
+                                                        backgroundColor: Theme.of(context).colorScheme.primary,
+                                                        shape: RoundedRectangleBorder(
+                                                          borderRadius: BorderRadius.circular(8),
+                                                        ),
+                                                        padding: const EdgeInsets.symmetric(vertical: 18),
+                                                        elevation: 0,
+                                                      ),
+                                                      child: Text(
+                                                        'Tornar-se vendedor',
+                                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                              color: Theme.of(context).colorScheme.onPrimary,
+                                                              fontWeight: FontWeight.w500,
+                                                            ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  const SizedBox(height: 24),
+                                                ],
+                                              );
+                                            },
+                                          );
+                                        },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
                                           child: Row(
