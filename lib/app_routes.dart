@@ -46,6 +46,9 @@ class AppRoutes {
                 fetchSellerListUseCase: FetchSellerListUseCase(
                   repository: SupabaseSellerRepository(client: supabaseClient),
                 ),
+                userSignOutUseCase: UserSignOutUseCase(
+                  repository: SupabaseUserSignOutRepository(client: supabaseClient),
+                ),
               );
             },
             child: const HomePage(),
@@ -122,7 +125,7 @@ class AppRoutes {
               repository: SupabaseSignUpRepository(client: Supabase.instance.client),
             ),
           ),
-          child: const SignInPage(),
+          child: const SignUpPage(),
         ),
       ),
       GoRoute(

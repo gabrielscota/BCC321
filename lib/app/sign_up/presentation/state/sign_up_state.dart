@@ -8,8 +8,8 @@ class SignUpLoadingState extends SignUpState {}
 
 class SignUpSuccessfullState extends SignUpState {}
 
-class SignUpPageErrorState extends SignUpState {
+class SignUpErrorState extends SignUpState {
   final String message;
 
-  SignUpPageErrorState({required this.message});
+  SignUpErrorState({required this.message});
 }

@@ -8,8 +8,8 @@ class SignInLoadingState extends SignInState {}
 
 class SignInSuccessfullState extends SignInState {}
 
-class SignInPageErrorState extends SignInState {
+class SignInErrorState extends SignInState {
   final String message;
 
-  SignInPageErrorState({required this.message});
+  SignInErrorState({required this.message});
 }

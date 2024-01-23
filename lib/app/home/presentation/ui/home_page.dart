@@ -56,13 +56,32 @@ class _HomePageState extends State<HomePage> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: BlocBuilder<HomeBloc, HomeState>(
-        builder: (context, state) {
+      body: BlocConsumer<HomeBloc, HomeState>(
+        listener: (context, state) {
           if (state is HomePageLoadingState) {
-            return const Center(
-              child: CircularProgressIndicator(),
+            showDialog(context: context, builder: (_) => const Center(child: CircularProgressIndicator()));
+          } else if (state is HomePageSignOutState) {
+            if (context.canPop()) {
+              Navigator.of(context).pop();
+            }
+            context.go(AppRoutes.signIn);
+          } else if (state is HomePageErrorState) {
+            if (context.canPop()) {
+              Navigator.of(context).pop();
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(state.message),
+              ),
             );
           } else if (state is HomePageLoadedState) {
+            if (context.canPop()) {
+              Navigator.of(context).pop();
+            }
+          }
+        },
+        builder: (context, state) {
+          if (state is HomePageLoadedState) {
             final user = state.user;
             final categories = state.categories;
             final products = state.products;
@@ -476,9 +495,9 @@ class _HomePageState extends State<HomePage> {
                                 sliver: SliverToBoxAdapter(
                                   child: ElevatedButton(
                                     onPressed: () {
-                                      context.go(AppRoutes.signIn);
+                                      _bloc.add(HomeSignOutEvent());
                                     },
-                                    child: const Text('Sign Out'),
+                                    child: const Text('Sair'),
                                   ),
                                 ),
                               ),

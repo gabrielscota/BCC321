@@ -25,3 +25,5 @@ class HomePageErrorState extends HomeState {
 
   HomePageErrorState({required this.message});
 }
+
+class HomePageSignOutState extends HomeState {}

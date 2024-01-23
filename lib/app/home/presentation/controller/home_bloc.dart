@@ -13,14 +13,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchCategoryListUseCase fetchCategoryListUseCase;
   final FetchProductListUseCase fetchProductListUseCase;
   final FetchSellerListUseCase fetchSellerListUseCase;
+  final UserSignOutUseCase userSignOutUseCase;
 
   HomeBloc({
     required this.fetchUserDetailsUseCase,
     required this.fetchProductListUseCase,
     required this.fetchCategoryListUseCase,
     required this.fetchSellerListUseCase,
+    required this.userSignOutUseCase,
   }) : super(HomeInitialState()) {
     on<HomeStartedEvent>(_load);
+    on<HomeSignOutEvent>(_signOut);
   }
 
   FutureOr<void> _load(HomeEvent event, Emitter<HomeState> emit) async {
@@ -43,6 +46,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             sellers: sellerResult.right,
           ),
         );
+      }
+    }
+  }
+
+  FutureOr<void> _signOut(HomeEvent event, Emitter<HomeState> emit) async {
+    if (event is HomeSignOutEvent) {
+      emit(HomePageLoadingState());
+
+      final result = await userSignOutUseCase.call();
+
+      if (result.isLeft) {
+        return emit(HomePageErrorState(message: result.left.message));
+      } else if (result.isRight) {
+        return emit(HomePageSignOutState());
       }
     }
   }

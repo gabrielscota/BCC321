@@ -23,7 +23,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       final result = await signInUseCase.call(email: event.email, password: event.password);
 
       if (result.isLeft) {
-        return emit(SignInPageErrorState(message: result.left.message));
+        return emit(SignInErrorState(message: result.left.message));
       } else if (result.isRight) {
         return emit(SignInSuccessfullState());
       }

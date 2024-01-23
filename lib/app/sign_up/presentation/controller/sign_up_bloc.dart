@@ -20,10 +20,18 @@ class SignUpBloc extends Bloc<SignUpEvent, SignUpState> {
     if (event is SignUpStartedEvent) {
       emit(SignUpLoadingState());
 
-      final result = await signUpUseCase.call(email: event.email, password: event.password);
+      final result = await signUpUseCase.call(
+        params: SignUpUseCaseParams(
+          name: event.name,
+          email: event.email,
+          phone: event.phone,
+          password: event.password,
+          cpf: event.cpf,
+        ),
+      );
 
       if (result.isLeft) {
-        return emit(SignUpPageErrorState(message: result.left.message));
+        return emit(SignUpErrorState(message: result.left.message));
       } else if (result.isRight) {
         return emit(SignUpSuccessfullState());
       }
