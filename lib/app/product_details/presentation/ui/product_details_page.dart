@@ -13,8 +13,9 @@ import '../controller/product_details_bloc.dart';
 class ProductDetailsPage extends StatefulWidget {
   final UniqueKey? heroKey;
   final String productId;
+  final String userId;
 
-  const ProductDetailsPage({super.key, this.heroKey, required this.productId});
+  const ProductDetailsPage({super.key, this.heroKey, required this.productId, required this.userId});
 
   @override
   State<ProductDetailsPage> createState() => _ProductDetailsPageState();
@@ -28,7 +29,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
     super.initState();
 
     _bloc = BlocProvider.of<ProductDetailsBloc>(context);
-    _bloc.add(ProductDetailsStartedEvent(productId: widget.productId));
+    _bloc.add(ProductDetailsStartedEvent(userId: widget.userId, productId: widget.productId));
   }
 
   @override
@@ -78,46 +79,116 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                             padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                             sliver: SliverToBoxAdapter(
                               child: Row(
+                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                 children: [
                                   AppOutlinedSquaredIconButtonComponent(
                                     icon: AppIcons.arrowLeft,
                                     onPressed: () => context.pop(),
                                   ),
+                                  AppOutlinedSquaredIconButtonComponent(
+                                    icon: state.product.isFavorited ? AppIcons.heartFilled : AppIcons.heart,
+                                    onPressed: () {
+                                      _bloc.add(
+                                        ProductDetailsFavoriteEvent(
+                                          userId: widget.userId,
+                                          productId: widget.productId,
+                                        ),
+                                      );
+                                    },
+                                  ),
                                 ],
                               ),
                             ),
                           ),
-                          const SliverPadding(
-                            padding: EdgeInsets.all(24),
+                          SliverPadding(
+                            padding: const EdgeInsets.all(24),
                             sliver: SliverToBoxAdapter(
                               child: AspectRatio(
                                 aspectRatio: 1,
-                                child: Placeholder(),
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
+                                    borderRadius: BorderRadius.circular(24),
+                                  ),
+                                  child: Hero(
+                                    tag: 'product-${widget.productId}',
+                                    child: const AppSvgIconComponent(
+                                      assetName: AppIcons.deliveryBox,
+                                      size: 32,
+                                    ),
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                           SliverToBoxAdapter(
                             child: Container(
                               padding: const EdgeInsets.only(bottom: 24),
-                              margin: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                              margin: const EdgeInsets.fromLTRB(24, 12, 24, 0),
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   Text(
-                                    state.product.name,
-                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                          color: Theme.of(context).colorScheme.onSurface,
-                                          fontWeight: FontWeight.w700,
+                                    state.product.shopName.toUpperCase(),
+                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                          fontWeight: FontWeight.w600,
                                         ),
                                   ),
-                                  // const SizedBox(height: 4),
-                                  // Text(
-                                  //   state.product.description,
-                                  //   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                  //         color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
-                                  //         fontWeight: FontWeight.w400,
-                                  //       ),
-                                  // ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    state.product.name,
+                                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                          color: Theme.of(context).colorScheme.onSurface,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                    maxLines: 2,
+                                    textAlign: TextAlign.start,
+                                  ),
+                                  const SizedBox(height: 12),
+                                  Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Container(
+                                        decoration: BoxDecoration(
+                                          color: Theme.of(context).colorScheme.primary,
+                                          borderRadius: BorderRadius.circular(4),
+                                        ),
+                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                        child: Text(
+                                          'Em estoque',
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Theme.of(context).colorScheme.onPrimary,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                        ),
+                                      ),
+                                      Row(
+                                        crossAxisAlignment: CrossAxisAlignment.center,
+                                        children: [
+                                          const AppSvgIconComponent(
+                                            assetName: AppIcons.star,
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '4.6',
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onBackground,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                          ),
+                                          const SizedBox(width: 4),
+                                          Text(
+                                            '(120 avaliações)',
+                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onBackground.withOpacity(.4),
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
                                 ],
                               ),
                             ),
@@ -127,9 +198,9 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Padding(
-                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 8),
+                                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
                                   child: Text(
-                                    'Descrição do produto',
+                                    'Informações do produto',
                                     style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w700,
@@ -373,7 +444,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   flex: 3,
                                   child: Container(
                                     decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(.6),
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(.8),
                                       borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
                                     ),
                                     padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
@@ -406,7 +477,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                 Expanded(
                                   flex: 2,
                                   child: FilledButton(
-                                    onPressed: () {},
+                                    onPressed: () async {
+                                      ScaffoldMessenger.of(context).showSnackBar(
+                                        SnackBar(
+                                          duration: const Duration(milliseconds: 1200),
+                                          content: Row(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              AppSvgIconComponent(
+                                                assetName: AppIcons.shoppingCart,
+                                                size: 28,
+                                                color: Theme.of(context).colorScheme.surface,
+                                              ),
+                                              const SizedBox(width: 12),
+                                              Text(
+                                                'Produto adicionado ao carrinho',
+                                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                      color: Theme.of(context).colorScheme.surface,
+                                                    ),
+                                              ),
+                                            ],
+                                          ),
+                                          backgroundColor: Theme.of(context).colorScheme.onSurface,
+                                          padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+                                        ),
+                                      );
+                                      await Future.delayed(const Duration(milliseconds: 400)).then((value) {
+                                        context.pop();
+                                      });
+                                    },
                                     style: FilledButton.styleFrom(
                                       backgroundColor: Theme.of(context).colorScheme.primary,
                                       shape: const RoundedRectangleBorder(

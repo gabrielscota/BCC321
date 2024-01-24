@@ -1,11 +1,11 @@
-class CategoryEntity {
+class SellerEntity {
   final String id;
-  final String name;
+  final String shopName;
   final String description;
 
-  CategoryEntity({
+  SellerEntity({
     required this.id,
-    required this.name,
+    required this.shopName,
     required this.description,
   });
 }

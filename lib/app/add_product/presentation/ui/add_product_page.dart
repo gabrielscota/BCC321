@@ -45,26 +45,40 @@ class _AddProductPageState extends State<AddProductPage> {
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocConsumer<AddProductBloc, AddProductState>(
-        listener: (context, state) {
+        listener: (context, state) async {
           if (state is AddProductLoadingState) {
             showDialog(context: context, builder: (_) => const Center(child: CircularProgressIndicator()));
           } else if (state is AddProductSuccessfullState) {
             if (context.canPop()) {
               context.pop();
-              context.pop();
             }
             ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
-                content: Text(
-                  'Produto cadastrado com sucesso!',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.onPrimary,
-                      ),
+                duration: const Duration(milliseconds: 1200),
+                content: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSvgIconComponent(
+                      assetName: AppIcons.deliveryBoxAdd,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Produto cadastrado com sucesso!',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                    ),
+                  ],
                 ),
-                backgroundColor: Theme.of(context).colorScheme.primary,
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 24),
+                backgroundColor: Theme.of(context).colorScheme.onSurface,
+                padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
               ),
             );
+            await Future.delayed(const Duration(milliseconds: 400)).then((value) {
+              context.pop();
+            });
           } else if (state is AddProductErrorState) {
             if (context.canPop()) {
               context.pop();

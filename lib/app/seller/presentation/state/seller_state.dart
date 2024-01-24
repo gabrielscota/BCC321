@@ -7,13 +7,9 @@ class SellerInitialState extends SellerState {}
 class SellerPageLoadingState extends SellerState {}
 
 class SellerPageLoadedState extends SellerState {
-  final List<CategoryEntity> categories;
-  final List<ProductEntity> products;
+  final SellerEntity seller;
 
-  SellerPageLoadedState({
-    this.categories = const [],
-    this.products = const [],
-  });
+  SellerPageLoadedState({required this.seller});
 }
 
 class SellerPageErrorState extends SellerState {

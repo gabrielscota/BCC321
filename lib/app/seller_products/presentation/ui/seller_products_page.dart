@@ -230,16 +230,15 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                                                         ],
                                                       ),
                                                       Padding(
-                                                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
+                                                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
                                                         child: Text(
                                                           'Apagar produto',
-                                                          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
                                                                 color: Colors.black,
                                                                 fontWeight: FontWeight.w700,
                                                               ),
                                                         ),
                                                       ),
-                                                      const SizedBox(height: 8),
                                                       Padding(
                                                         padding: const EdgeInsets.symmetric(horizontal: 24),
                                                         child: Text(
@@ -252,7 +251,7 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                                                                 fontWeight: FontWeight.w500,
                                                               ),
                                                           textAlign: TextAlign.start,
-                                                          maxLines: 2,
+                                                          maxLines: 4,
                                                         ),
                                                       ),
                                                       Padding(

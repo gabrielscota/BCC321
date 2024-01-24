@@ -14,6 +14,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchProductListUseCase fetchProductListUseCase;
   final FetchSellerListUseCase fetchSellerListUseCase;
   final UserSignOutUseCase userSignOutUseCase;
+  final VerifyIfUserIsSellerUseCase verifyIfUserIsSellerUseCase;
 
   HomeBloc({
     required this.fetchUserDetailsUseCase,
@@ -21,9 +22,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required this.fetchCategoryListUseCase,
     required this.fetchSellerListUseCase,
     required this.userSignOutUseCase,
+    required this.verifyIfUserIsSellerUseCase,
   }) : super(HomeInitialState()) {
     on<HomeStartedEvent>(_load);
     on<HomeSignOutEvent>(_signOut);
+    on<HomeVerifyIfUserIsSellerEvent>(_verifyIfUserIsSeller);
   }
 
   FutureOr<void> _load(HomeEvent event, Emitter<HomeState> emit) async {
@@ -46,6 +49,29 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             sellers: sellerResult.right,
           ),
         );
+      }
+    }
+  }
+
+  bool _userIsSeller = false;
+  bool get userIsSeller => _userIsSeller;
+
+  FutureOr<void> _verifyIfUserIsSeller(HomeEvent event, Emitter<HomeState> emit) async {
+    if (event is HomeVerifyIfUserIsSellerEvent) {
+      final userDetailsResult = await fetchUserDetailsUseCase.call();
+
+      if (userDetailsResult.isLeft) {
+        _userIsSeller = false;
+        return;
+      } else if (userDetailsResult.isRight) {
+        final String userId = userDetailsResult.right.id;
+        final result = await verifyIfUserIsSellerUseCase.call(userId: userId);
+
+        if (result.isLeft) {
+          _userIsSeller = false;
+        } else if (result.isRight) {
+          _userIsSeller = result.right;
+        }
       }
     }
   }

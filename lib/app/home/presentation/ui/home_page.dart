@@ -22,7 +22,7 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAliveClientMixin {
   late final HomeBloc _bloc;
 
   late int _currentPageViewIndex;
@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
 
     _bloc = BlocProvider.of<HomeBloc>(context);
     _bloc.add(HomeStartedEvent());
+    _bloc.add(HomeVerifyIfUserIsSellerEvent());
 
     _currentPageViewIndex = 0;
     _pageController = PageController(initialPage: _currentPageViewIndex);
@@ -45,6 +46,28 @@ class _HomePageState extends State<HomePage> {
     _currentCategoryIndex = 0;
 
     _searchController = TextEditingController();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AppRoutes.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    AppRoutes.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+
+    _pageController.jumpToPage(_currentPageViewIndex);
+
+    // _bloc.add(HomeStartedEvent());
+    _bloc.add(HomeVerifyIfUserIsSellerEvent());
   }
 
   void _changePageView(int index) {
@@ -62,6 +85,8 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
+
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
@@ -92,7 +117,6 @@ class _HomePageState extends State<HomePage> {
             final products = state.products.where((product) {
               return product.name.toLowerCase().contains(_searchController.text.toLowerCase());
             }).toList(growable: true);
-            final sellers = state.sellers;
 
             return Stack(
               children: [
@@ -397,7 +421,7 @@ class _HomePageState extends State<HomePage> {
                                         sliver: SliverGrid.builder(
                                           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                                             crossAxisCount: 2,
-                                            childAspectRatio: 0.7,
+                                            childAspectRatio: 0.74,
                                             crossAxisSpacing: 24,
                                             mainAxisSpacing: 24,
                                           ),
@@ -407,6 +431,9 @@ class _HomePageState extends State<HomePage> {
                                               onTap: () {
                                                 context.push(
                                                   '${AppRoutes.product}/${products[index].id}',
+                                                  extra: {
+                                                    'userId': user.id,
+                                                  },
                                                 );
                                               },
                                               child: Container(
@@ -416,11 +443,17 @@ class _HomePageState extends State<HomePage> {
                                                 ),
                                                 padding: const EdgeInsets.all(16),
                                                 child: Column(
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  crossAxisAlignment: CrossAxisAlignment.stretch,
                                                   children: [
-                                                    const AspectRatio(
+                                                    AspectRatio(
                                                       aspectRatio: 1,
-                                                      child: Placeholder(),
+                                                      child: Hero(
+                                                        tag: 'product-${products[index].id}',
+                                                        child: const AppSvgIconComponent(
+                                                          assetName: AppIcons.deliveryBox,
+                                                          size: 32,
+                                                        ),
+                                                      ),
                                                     ),
                                                     const SizedBox(height: 12),
                                                     Text(
@@ -429,7 +462,9 @@ class _HomePageState extends State<HomePage> {
                                                             color: Theme.of(context).colorScheme.onSurface,
                                                             fontWeight: FontWeight.w500,
                                                           ),
-                                                      maxLines: 2,
+                                                      maxLines: 1,
+                                                      overflow: TextOverflow.ellipsis,
+                                                      textAlign: TextAlign.start,
                                                     ),
                                                     const SizedBox(height: 2),
                                                     Text(
@@ -440,6 +475,7 @@ class _HomePageState extends State<HomePage> {
                                                             fontWeight: FontWeight.w500,
                                                           ),
                                                       maxLines: 1,
+                                                      textAlign: TextAlign.start,
                                                     ),
                                                   ],
                                                 ),
@@ -670,14 +706,16 @@ class _HomePageState extends State<HomePage> {
                                         ),
                                       ),
                                       InkWell(
-                                        onTap: () {},
+                                        onTap: () {
+                                          context.push('${AppRoutes.favorites}/${user.id}');
+                                        },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
                                               const AppSvgIconComponent(
-                                                assetName: AppIcons.heartLike,
+                                                assetName: AppIcons.heart,
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
@@ -734,90 +772,109 @@ class _HomePageState extends State<HomePage> {
                                       const SizedBox(height: 12),
                                       InkWell(
                                         onTap: () {
-                                          // TODO: Verificar se o usuário já tem sua loja criada
-                                          context.push(
-                                            '${AppRoutes.seller}/${user.id}',
-                                          );
-                                          // showModalBottomSheet(
-                                          //   context: context,
-                                          //   backgroundColor: Theme.of(context).colorScheme.background,
-                                          //   shape: const RoundedRectangleBorder(
-                                          //     borderRadius: BorderRadius.only(
-                                          //       topLeft: Radius.circular(24),
-                                          //       topRight: Radius.circular(24),
-                                          //     ),
-                                          //   ),
-                                          //   useSafeArea: true,
-                                          //   builder: (context) {
-                                          //     return Column(
-                                          //       crossAxisAlignment: CrossAxisAlignment.stretch,
-                                          //       mainAxisSize: MainAxisSize.min,
-                                          //       children: [
-                                          //         Row(
-                                          //           mainAxisAlignment: MainAxisAlignment.center,
-                                          //           children: [
-                                          //             Container(
-                                          //               margin: const EdgeInsets.symmetric(vertical: 16),
-                                          //               height: 4,
-                                          //               width: 64,
-                                          //               decoration: BoxDecoration(
-                                          //                 borderRadius: BorderRadius.circular(2),
-                                          //                 color:
-                                          //                     Theme.of(context).colorScheme.onSurface.withOpacity(.2),
-                                          //               ),
-                                          //             ),
-                                          //           ],
-                                          //         ),
-                                          //         Padding(
-                                          //           padding: const EdgeInsets.symmetric(horizontal: 24),
-                                          //           child: Text(
-                                          //             'Criar loja',
-                                          //             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          //                   color: Colors.black,
-                                          //                   fontWeight: FontWeight.w700,
-                                          //                 ),
-                                          //           ),
-                                          //         ),
-                                          //         const SizedBox(height: 16),
-                                          //         Padding(
-                                          //           padding: const EdgeInsets.symmetric(horizontal: 24),
-                                          //           child: Text(
-                                          //             'Para criar uma loja, você precisa ser um vendedor.',
-                                          //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                          //                   color:
-                                          //                       Theme.of(context).colorScheme.onSurface.withOpacity(.5),
-                                          //                   fontWeight: FontWeight.w500,
-                                          //                 ),
-                                          //             textAlign: TextAlign.center,
-                                          //           ),
-                                          //         ),
-                                          //         const SizedBox(height: 16),
-                                          //         Padding(
-                                          //           padding: const EdgeInsets.symmetric(horizontal: 24),
-                                          //           child: FilledButton(
-                                          //             onPressed: () {},
-                                          //             style: FilledButton.styleFrom(
-                                          //               backgroundColor: Theme.of(context).colorScheme.primary,
-                                          //               shape: RoundedRectangleBorder(
-                                          //                 borderRadius: BorderRadius.circular(8),
-                                          //               ),
-                                          //               padding: const EdgeInsets.symmetric(vertical: 18),
-                                          //               elevation: 0,
-                                          //             ),
-                                          //             child: Text(
-                                          //               'Tornar-se vendedor',
-                                          //               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                          //                     color: Theme.of(context).colorScheme.onPrimary,
-                                          //                     fontWeight: FontWeight.w500,
-                                          //                   ),
-                                          //             ),
-                                          //           ),
-                                          //         ),
-                                          //         const SizedBox(height: 24),
-                                          //       ],
-                                          //     );
-                                          //   },
-                                          // );
+                                          if (_bloc.userIsSeller) {
+                                            context.push(
+                                              '${AppRoutes.seller}/${user.id}',
+                                            );
+                                          } else {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              backgroundColor: Theme.of(context).colorScheme.background,
+                                              shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(24),
+                                                  topRight: Radius.circular(24),
+                                                ),
+                                              ),
+                                              useSafeArea: true,
+                                              builder: (context) {
+                                                return SafeArea(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Container(
+                                                            margin: const EdgeInsets.symmetric(vertical: 16),
+                                                            height: 4,
+                                                            width: 64,
+                                                            decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(2),
+                                                              color: Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface
+                                                                  .withOpacity(.2),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                                                        child: Text(
+                                                          'Você ainda não possui uma loja',
+                                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                                color: Colors.black,
+                                                                fontWeight: FontWeight.w700,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                                                        child: Text(
+                                                          'Para começar a vender seus produtos, você precisa criar uma loja.',
+                                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                color: Theme.of(context)
+                                                                    .colorScheme
+                                                                    .onSurface
+                                                                    .withOpacity(.5),
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                          textAlign: TextAlign.start,
+                                                          maxLines: 4,
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 12),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: FilledButton(
+                                                                onPressed: () {
+                                                                  context.pop();
+                                                                  context.push('${AppRoutes.sellerCreate}/${user.id}');
+                                                                },
+                                                                style: FilledButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      Theme.of(context).colorScheme.primary,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(12),
+                                                                  ),
+                                                                  padding: const EdgeInsets.symmetric(vertical: 22),
+                                                                  elevation: 0,
+                                                                ),
+                                                                child: Text(
+                                                                  'Criar loja',
+                                                                  style: Theme.of(context)
+                                                                      .textTheme
+                                                                      .bodyLarge
+                                                                      ?.copyWith(
+                                                                        color: Theme.of(context).colorScheme.onPrimary,
+                                                                        fontWeight: FontWeight.w500,
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          }
                                         },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
@@ -906,7 +963,7 @@ class _HomePageState extends State<HomePage> {
                           filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                           child: Container(
                             decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.surface.withOpacity(.7),
+                              color: Theme.of(context).colorScheme.surface.withOpacity(.8),
                               border: Border.all(
                                 color: Theme.of(context).colorScheme.onSurface.withOpacity(.1),
                               ),
@@ -931,7 +988,7 @@ class _HomePageState extends State<HomePage> {
                                     width: 56,
                                     decoration: BoxDecoration(
                                       color: _currentPageViewIndex == 0
-                                          ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.3)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
@@ -960,7 +1017,7 @@ class _HomePageState extends State<HomePage> {
                                     width: 56,
                                     decoration: BoxDecoration(
                                       color: _currentPageViewIndex == 1
-                                          ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.3)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
@@ -989,7 +1046,7 @@ class _HomePageState extends State<HomePage> {
                                     width: 56,
                                     decoration: BoxDecoration(
                                       color: _currentPageViewIndex == 2
-                                          ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.3)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
@@ -1046,4 +1103,7 @@ class _HomePageState extends State<HomePage> {
       ),
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

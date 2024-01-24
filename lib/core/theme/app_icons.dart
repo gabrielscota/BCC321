@@ -12,7 +12,8 @@ class AppIcons {
   static const String eye = 'assets/icons/eye.svg';
   static const String eyeOff = 'assets/icons/eye-off.svg';
   static const String filter = 'assets/icons/filter.svg';
-  static const String heartLike = 'assets/icons/heart-like.svg';
+  static const String heartFilled = 'assets/icons/heart-filled.svg';
+  static const String heart = 'assets/icons/heart.svg';
   static const String home = 'assets/icons/home.svg';
   static const String key = 'assets/icons/key.svg';
   static const String location = 'assets/icons/location.svg';

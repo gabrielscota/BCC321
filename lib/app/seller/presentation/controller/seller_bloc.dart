@@ -9,12 +9,10 @@ part '../event/seller_event.dart';
 part '../state/seller_state.dart';
 
 class SellerBloc extends Bloc<SellerEvent, SellerState> {
-  final FetchSellerCategoryListUseCase fetchCategoryListUseCase;
-  final FetchSellerProductListUseCase fetchSellerProductListUseCase;
+  final FetchSellerDetailsUseCase fetchSellerDetailsUseCase;
 
   SellerBloc({
-    required this.fetchSellerProductListUseCase,
-    required this.fetchCategoryListUseCase,
+    required this.fetchSellerDetailsUseCase,
   }) : super(SellerInitialState()) {
     on<SellerStartedEvent>(_load);
   }
@@ -23,16 +21,14 @@ class SellerBloc extends Bloc<SellerEvent, SellerState> {
     if (event is SellerStartedEvent) {
       emit(SellerPageLoadingState());
 
-      final categoryResult = await fetchCategoryListUseCase.call();
-      final productResult = await fetchSellerProductListUseCase.call(sellerId: event.sellerId);
+      final sellerResult = await fetchSellerDetailsUseCase.call(sellerId: event.sellerId);
 
-      if (categoryResult.isLeft && productResult.isLeft) {
-        return emit(SellerPageErrorState(message: categoryResult.left.message));
-      } else if (categoryResult.isRight && productResult.isRight) {
+      if (sellerResult.isLeft) {
+        return emit(SellerPageErrorState(message: sellerResult.left.message));
+      } else if (sellerResult.isRight) {
         return emit(
           SellerPageLoadedState(
-            categories: categoryResult.right,
-            products: productResult.right,
+            seller: sellerResult.right,
           ),
         );
       }

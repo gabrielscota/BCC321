@@ -64,8 +64,7 @@ class _SellerPageState extends State<SellerPage> {
               ],
             );
           } else if (state is SellerPageLoadedState) {
-            final categories = state.categories;
-            final products = state.products;
+            final seller = state.seller;
 
             return CustomScrollView(
               physics: const BouncingScrollPhysics(),
@@ -99,19 +98,27 @@ class _SellerPageState extends State<SellerPage> {
                               ),
                               const SizedBox(height: 8),
                               Text(
-                                'Scotá Shops 123',
+                                seller.shopName,
                                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                       color: Colors.black,
                                       fontWeight: FontWeight.w600,
                                     ),
                               ),
-                              const SizedBox(height: 8),
-                              Text(
-                                'São Paulo, SP',
-                                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
-                                      fontWeight: FontWeight.w500,
+                              Visibility(
+                                visible: seller.description.isNotEmpty,
+                                child: Column(
+                                  children: [
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      seller.description,
+                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                            color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                            fontWeight: FontWeight.w500,
+                                          ),
+                                      maxLines: 3,
                                     ),
+                                  ],
+                                ),
                               ),
                               const SizedBox(height: 32),
                               Container(

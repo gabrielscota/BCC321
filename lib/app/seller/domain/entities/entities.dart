@@ -1,2 +1,1 @@
-export 'category_entity.dart';
-export 'product_entity.dart';
+export 'seller_entity.dart';

@@ -9,9 +9,9 @@ class FetchProductDetailsUseCase {
 
   FetchProductDetailsUseCase({required this.repository});
 
-  Future<Either<Failure, ProductEntity>> call({required String productId}) async {
+  Future<Either<Failure, ProductEntity>> call({required String userId, required String productId}) async {
     try {
-      final result = await repository.fetchProductDetails(productId: productId);
+      final result = await repository.fetchProductDetails(userId: userId, productId: productId);
       return Right(result);
     } on Failure catch (e) {
       return Left(e);

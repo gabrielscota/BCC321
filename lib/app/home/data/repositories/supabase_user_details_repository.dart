@@ -28,4 +28,20 @@ class SupabaseUserDetailsRepository implements UserDetailsRepository {
       throw ApiFailure(message: e.toString());
     }
   }
+
+  @override
+  Future<bool> verifyIfUserIsSeller({required String userId}) async {
+    try {
+      final response = await client.from('seller').select().eq('user_id', userId).limit(1);
+      if (response.isNotEmpty) {
+        return true;
+      } else {
+        return false;
+      }
+    } on DtoFailure catch (_) {
+      rethrow;
+    } catch (e) {
+      throw ApiFailure(message: e.toString());
+    }
+  }
 }

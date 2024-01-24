@@ -5,3 +5,5 @@ abstract class HomeEvent {}
 class HomeStartedEvent extends HomeEvent {}
 
 class HomeSignOutEvent extends HomeEvent {}
+
+class HomeVerifyIfUserIsSellerEvent extends HomeEvent {}

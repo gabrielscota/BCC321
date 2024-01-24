@@ -5,20 +5,20 @@ import '../../domain/entities/entities.dart';
 import '../../domain/repositories/repositories.dart';
 import '../dto/dto.dart';
 
-class SupabaseSellerProductRepository implements SellerProductRepository {
+class SupabaseSellerDetailsRepository implements SellerDetailsRepository {
   final SupabaseClient client;
 
-  SupabaseSellerProductRepository({required this.client});
+  SupabaseSellerDetailsRepository({required this.client});
 
   @override
-  Future<List<ProductEntity>> fetchProductList({required String sellerId}) async {
+  Future<SellerEntity> fetchSellerDetails({required String sellerId}) async {
     try {
-      final response = await client.from('product').select().eq('seller_id', sellerId);
+      final response = await client.from('seller').select().eq('user_id', sellerId).limit(1);
       if (response.isNotEmpty) {
-        final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
-        return products;
+        final seller = SellerDto.fromMap(response.first).toEntity();
+        return seller;
       } else {
-        return [];
+        throw ApiFailure(message: 'No seller found');
       }
     } on DtoFailure catch (_) {
       rethrow;
