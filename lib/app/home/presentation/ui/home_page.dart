@@ -229,72 +229,6 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                     ),
                                   ),
                                 ),
-                                // MultiSliver(
-                                //   children: [
-                                //     SliverToBoxAdapter(
-                                //       child: Padding(
-                                //         padding: const EdgeInsets.fromLTRB(24, 12, 24, 16),
-                                //         child: Text(
-                                //           'Lojas',
-                                //           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                //                 color: Colors.black,
-                                //                 fontWeight: FontWeight.w700,
-                                //               ),
-                                //         ),
-                                //       ),
-                                //     ),
-                                //     SliverToBoxAdapter(
-                                //       child: SizedBox(
-                                //         height: 72,
-                                //         child: ListView.separated(
-                                //           scrollDirection: Axis.horizontal,
-                                //           padding: const EdgeInsets.symmetric(horizontal: 24),
-                                //           physics: const BouncingScrollPhysics(),
-                                //           separatorBuilder: (context, index) => const SizedBox(width: 12),
-                                //           itemCount: sellers.length,
-                                //           itemBuilder: (context, index) {
-                                //             return GestureDetector(
-                                //               onTap: () {
-                                //                 context.push(
-                                //                   '${AppRoutes.shop}/${sellers[index].id}',
-                                //                 );
-                                //               },
-                                //               child: Container(
-                                //                 decoration: BoxDecoration(
-                                //                   borderRadius: BorderRadius.circular(8),
-                                //                   color: Colors.grey.shade100,
-                                //                 ),
-                                //                 padding: const EdgeInsets.all(16),
-                                //                 child: Column(
-                                //                   crossAxisAlignment: CrossAxisAlignment.start,
-                                //                   children: [
-                                //                     // Expanded(
-                                //                     //   child: Container(
-                                //                     //     decoration: BoxDecoration(
-                                //                     //       borderRadius: BorderRadius.circular(8),
-                                //                     //       color: Colors.grey.shade100,
-                                //                     //     ),
-                                //                     //   ),
-                                //                     // ),
-                                //                     // const SizedBox(height: 8),
-                                //                     Text(
-                                //                       sellers[index].shopName,
-                                //                       style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                //                             color: Theme.of(context).colorScheme.onSurface,
-                                //                             fontWeight: FontWeight.w500,
-                                //                           ),
-                                //                       maxLines: 1,
-                                //                     ),
-                                //                   ],
-                                //                 ),
-                                //               ),
-                                //             );
-                                //           },
-                                //         ),
-                                //       ),
-                                //     ),
-                                //   ],
-                                // ),
                                 SliverToBoxAdapter(
                                   child: Container(
                                     padding: const EdgeInsets.fromLTRB(0, 24, 0, 16),
@@ -312,7 +246,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                           ),
                                         ),
                                         SizedBox(
-                                          height: 48,
+                                          height: 40,
                                           child: ListView.separated(
                                             shrinkWrap: true,
                                             scrollDirection: Axis.horizontal,
@@ -340,11 +274,11 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                                             : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                                                       ),
                                                     ),
-                                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                                                    padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 24),
                                                     alignment: Alignment.center,
                                                     child: Text(
                                                       'Todas as categorias',
-                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                      style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                                             color: _currentCategoryIndex == index
                                                                 ? Theme.of(context).colorScheme.onPrimary
                                                                 : Theme.of(context)
@@ -376,11 +310,11 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                                           : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                                                     ),
                                                   ),
-                                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                                                  padding: const EdgeInsets.symmetric(vertical: 0, horizontal: 24),
                                                   alignment: Alignment.center,
                                                   child: Text(
                                                     categories[index - 1].name.capitalize(),
-                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    style: Theme.of(context).textTheme.titleSmall?.copyWith(
                                                           color: _currentCategoryIndex == index
                                                               ? Theme.of(context).colorScheme.onPrimary
                                                               : Theme.of(context)
@@ -988,7 +922,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                     width: 56,
                                     decoration: BoxDecoration(
                                       color: _currentPageViewIndex == 0
-                                          ? Theme.of(context).colorScheme.primary.withOpacity(.3)
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.2)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
@@ -1017,7 +951,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                     width: 56,
                                     decoration: BoxDecoration(
                                       color: _currentPageViewIndex == 1
-                                          ? Theme.of(context).colorScheme.primary.withOpacity(.3)
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.2)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(32),
                                     ),
@@ -1046,7 +980,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                     width: 56,
                                     decoration: BoxDecoration(
                                       color: _currentPageViewIndex == 2
-                                          ? Theme.of(context).colorScheme.primary.withOpacity(.3)
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.2)
                                           : Colors.transparent,
                                       borderRadius: BorderRadius.circular(32),
                                     ),

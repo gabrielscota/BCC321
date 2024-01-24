@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:lottie/lottie.dart';
 
 import '../../../../app_routes.dart';
+import '../../../../core/theme/theme.dart';
 import '../controller/splash_bloc.dart';
 
 class SplashPage extends StatefulWidget {
@@ -40,23 +42,14 @@ class _SplashPageState extends State<SplashPage> {
           }
         },
         builder: (context, state) {
-          if (state is SplashPageLoadingState) {
-            return const Center(
-              child: Text('Splash Page Loading'),
-            );
-          } else if (state is SplashPageLoadedState) {
-            return const Center(
-              child: Text('Splash Page Loaded'),
-            );
-          } else if (state is SplashPageErrorState) {
-            return const Center(
-              child: Text('Splash Page Error'),
-            );
-          } else {
-            return const Center(
-              child: Text('Splash Page Initial'),
-            );
-          }
+          return Center(
+            child: Lottie.asset(
+              AppAnimations.loadingWhite,
+              width: 64,
+              height: 64,
+              alignment: Alignment.center,
+            ),
+          );
         },
       ),
     );
