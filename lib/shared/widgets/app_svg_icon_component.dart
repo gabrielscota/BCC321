@@ -4,10 +4,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 class AppSvgIconComponent extends StatelessWidget {
   final String assetName;
   final Color? color;
+  final double size;
 
   const AppSvgIconComponent({
     super.key,
     required this.assetName,
+    this.size = 24.0,
     this.color,
   });
 
@@ -15,9 +17,10 @@ class AppSvgIconComponent extends StatelessWidget {
   Widget build(BuildContext context) {
     return SvgPicture.asset(
       assetName,
-      height: 24,
-      width: 24,
+      height: size,
+      width: size,
       colorFilter: color != null ? ColorFilter.mode(color!, BlendMode.srcIn) : null,
+      alignment: Alignment.center,
     );
   }
 }

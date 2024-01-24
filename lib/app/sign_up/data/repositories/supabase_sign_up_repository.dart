@@ -15,7 +15,9 @@ class SupabaseSignUpRepository implements SignUpRepository {
     required String email,
     required String phone,
     required String password,
+    required bool isPhysicalPerson,
     required String cpf,
+    required String cnpj,
   }) async {
     try {
       final response = await client.auth.signUp(
@@ -33,11 +35,19 @@ class SupabaseSignUpRepository implements SignUpRepository {
 
         final user = UserDto.fromMap(userResult.first);
 
-        final physicalPersonUser = PhysicalPersonUserDto(
-          user: user,
-          cpf: cpf,
-        ).toMap();
-        await client.from('person_physical').insert(physicalPersonUser);
+        if (isPhysicalPerson) {
+          final physicalPersonUser = PhysicalPersonUserDto(
+            user: user,
+            cpf: cpf,
+          ).toMap();
+          await client.from('person_physical').insert(physicalPersonUser);
+        } else {
+          final legalPersonUser = LegalPersonUserDto(
+            user: user,
+            cnpj: cnpj,
+          ).toMap();
+          await client.from('person_legal').insert(legalPersonUser);
+        }
 
         await client.auth.signInWithPassword(
           email: user.email,

@@ -40,8 +40,30 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       body: BlocBuilder<ProductDetailsBloc, ProductDetailsState>(
         builder: (context, state) {
           if (state is ProductDetailsPageLoadingState) {
-            return const Center(
-              child: Text('ProductDetails Page Loading'),
+            return CustomScrollView(
+              slivers: [
+                SliverSafeArea(
+                  top: true,
+                  sliver: MultiSliver(
+                    children: [
+                      SliverPadding(
+                        padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
+                        sliver: SliverToBoxAdapter(
+                          child: Row(
+                            children: [
+                              AppOutlinedSquaredIconButtonComponent(
+                                icon: AppIcons.arrowLeft,
+                                onPressed: () => context.pop(),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      const AppShimmerEffectComponent(),
+                    ],
+                  ),
+                ),
+              ],
             );
           } else if (state is ProductDetailsPageLoadedState) {
             return Stack(
@@ -342,74 +364,68 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                         child: BackdropFilter(
                           filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                           child: Container(
+                            height: 72,
                             margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                            decoration: BoxDecoration(
-                              color: Theme.of(context).colorScheme.primary.withOpacity(.6),
-                              border: Border.all(
-                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
-                              ),
-                              borderRadius: BorderRadius.circular(16),
-                            ),
-                            child: SizedBox(
-                              height: 64,
-                              child: Row(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Expanded(
-                                    flex: 3,
-                                    child: Container(
-                                      decoration: const BoxDecoration(
-                                        borderRadius: BorderRadius.horizontal(left: Radius.circular(16)),
-                                      ),
-                                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        mainAxisSize: MainAxisSize.min,
-                                        mainAxisAlignment: MainAxisAlignment.center,
-                                        children: [
-                                          Text(
-                                            CurrencyFormat.formatCentsToReal(state.product.price),
-                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                  color: Theme.of(context).colorScheme.onPrimary,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                            textAlign: TextAlign.start,
-                                          ),
-                                          Text(
-                                            'Preço por unidade',
-                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(.6),
-                                                  fontWeight: FontWeight.w400,
-                                                ),
-                                            textAlign: TextAlign.start,
-                                            maxLines: 1,
-                                          ),
-                                        ],
-                                      ),
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  flex: 3,
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      color: Theme.of(context).colorScheme.primary.withOpacity(.6),
+                                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
                                     ),
-                                  ),
-                                  Expanded(
-                                    flex: 2,
-                                    child: InkWell(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          borderRadius: const BorderRadius.horizontal(right: Radius.circular(16)),
-                                          color: Theme.of(context).colorScheme.primary,
-                                        ),
-                                        alignment: Alignment.center,
-                                        child: Text(
-                                          'Comprar',
+                                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                    child: Column(
+                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      mainAxisSize: MainAxisSize.min,
+                                      mainAxisAlignment: MainAxisAlignment.center,
+                                      children: [
+                                        Text(
+                                          CurrencyFormat.formatCentsToReal(state.product.price),
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                                 color: Theme.of(context).colorScheme.onPrimary,
                                                 fontWeight: FontWeight.w700,
                                               ),
-                                          textAlign: TextAlign.center,
+                                          textAlign: TextAlign.start,
                                         ),
-                                      ),
+                                        Text(
+                                          'Preço por unidade',
+                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                color: Theme.of(context).colorScheme.onPrimary.withOpacity(.6),
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                          textAlign: TextAlign.start,
+                                          maxLines: 1,
+                                        ),
+                                      ],
                                     ),
                                   ),
-                                ],
-                              ),
+                                ),
+                                Expanded(
+                                  flex: 2,
+                                  child: FilledButton(
+                                    onPressed: () {},
+                                    style: FilledButton.styleFrom(
+                                      backgroundColor: Theme.of(context).colorScheme.primary,
+                                      shape: const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.horizontal(right: Radius.circular(16)),
+                                      ),
+                                      elevation: 0,
+                                      padding: EdgeInsets.zero,
+                                    ),
+                                    child: Text(
+                                      'Comprar',
+                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                            color: Theme.of(context).colorScheme.onPrimary,
+                                            fontWeight: FontWeight.w700,
+                                          ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
                         ),

@@ -33,18 +33,18 @@ class AppOutlinedSquaredIconButtonComponent extends StatelessWidget {
           onPressed();
         },
         style: OutlinedButton.styleFrom(
-          minimumSize: const Size.square(56),
-          maximumSize: const Size.square(56),
+          minimumSize: const Size.square(64),
+          maximumSize: const Size.square(64),
           shape: const RoundedRectangleBorder(
-            borderRadius: BorderRadius.all(Radius.circular(16)),
+            borderRadius: BorderRadius.all(Radius.circular(18)),
           ),
           side: BorderSide(
-            color: color?.withOpacity(0.3) ?? Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+            color: color?.withOpacity(0.3) ?? Theme.of(context).colorScheme.onBackground.withOpacity(0.1),
             width: 1,
           ),
           alignment: Alignment.center,
           padding: EdgeInsets.zero,
-          foregroundColor: color ?? Theme.of(context).colorScheme.onBackground.withOpacity(0.3),
+          foregroundColor: color ?? Theme.of(context).colorScheme.primary.withOpacity(0.1),
         ),
         child: AppSvgIconComponent(
           assetName: icon,

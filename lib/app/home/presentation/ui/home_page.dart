@@ -68,30 +68,25 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
-          if (state is HomePageLoadingState) {
-            showDialog(context: context, builder: (_) => const Center(child: CircularProgressIndicator()));
-          } else if (state is HomePageSignOutState) {
-            if (context.canPop()) {
-              Navigator.of(context).pop();
-            }
+          if (state is HomePageSignOutState) {
             context.go(AppRoutes.signIn);
-          } else if (state is HomePageErrorState) {
-            if (context.canPop()) {
-              Navigator.of(context).pop();
-            }
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text(state.message),
-              ),
-            );
-          } else if (state is HomePageLoadedState) {
-            if (context.canPop()) {
-              Navigator.of(context).pop();
-            }
           }
         },
         builder: (context, state) {
-          if (state is HomePageLoadedState) {
+          if (state is HomePageLoadingState) {
+            return CustomScrollView(
+              slivers: [
+                SliverSafeArea(
+                  top: true,
+                  sliver: MultiSliver(
+                    children: const [
+                      AppShimmerEffectComponent(),
+                    ],
+                  ),
+                ),
+              ],
+            );
+          } else if (state is HomePageLoadedState) {
             final user = state.user;
             final categories = state.categories;
             final products = state.products.where((product) {
@@ -126,16 +121,17 @@ class _HomePageState extends State<HomePage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Olá, ${user.name.split(' ').first} 👋',
+                                          'Olá, ${user.name.split(' ').first} 👋🏽',
                                           style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                                 color: Colors.black,
                                                 fontWeight: FontWeight.w600,
                                               ),
                                         ),
+                                        const SizedBox(height: 4),
                                         Text(
                                           'O que você está procurando hoje?',
                                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.3),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
@@ -285,15 +281,16 @@ class _HomePageState extends State<HomePage> {
                                           padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
                                           child: Text(
                                             'Categorias',
-                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w700,
+                                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
                                           ),
                                         ),
                                         SizedBox(
-                                          height: 36,
+                                          height: 48,
                                           child: ListView.separated(
+                                            shrinkWrap: true,
                                             scrollDirection: Axis.horizontal,
                                             padding: const EdgeInsets.symmetric(horizontal: 24),
                                             physics: const BouncingScrollPhysics(),
@@ -306,10 +303,10 @@ class _HomePageState extends State<HomePage> {
                                                   splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                                   highlightColor:
                                                       Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                                  borderRadius: BorderRadius.circular(24),
+                                                  borderRadius: BorderRadius.circular(32),
                                                   child: Container(
                                                     decoration: BoxDecoration(
-                                                      borderRadius: BorderRadius.circular(24),
+                                                      borderRadius: BorderRadius.circular(32),
                                                       color: _currentCategoryIndex == index
                                                           ? Theme.of(context).colorScheme.primary
                                                           : Colors.transparent,
@@ -319,13 +316,11 @@ class _HomePageState extends State<HomePage> {
                                                             : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                                                       ),
                                                     ),
-                                                    padding: const EdgeInsets.symmetric(
-                                                      vertical: 8,
-                                                      horizontal: 16,
-                                                    ),
+                                                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                                                    alignment: Alignment.center,
                                                     child: Text(
                                                       'Todas as categorias',
-                                                      style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                             color: _currentCategoryIndex == index
                                                                 ? Theme.of(context).colorScheme.onPrimary
                                                                 : Theme.of(context)
@@ -344,10 +339,10 @@ class _HomePageState extends State<HomePage> {
                                                 onTap: () => _changeCategory(index),
                                                 splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                                 highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
-                                                borderRadius: BorderRadius.circular(24),
+                                                borderRadius: BorderRadius.circular(32),
                                                 child: Container(
                                                   decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(24),
+                                                    borderRadius: BorderRadius.circular(32),
                                                     color: _currentCategoryIndex == index
                                                         ? Theme.of(context).colorScheme.primary
                                                         : Colors.transparent,
@@ -357,13 +352,11 @@ class _HomePageState extends State<HomePage> {
                                                           : Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
                                                     ),
                                                   ),
-                                                  padding: const EdgeInsets.symmetric(
-                                                    vertical: 8,
-                                                    horizontal: 16,
-                                                  ),
+                                                  padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                                                  alignment: Alignment.center,
                                                   child: Text(
                                                     categories[index - 1].name.capitalize(),
-                                                    style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                           color: _currentCategoryIndex == index
                                                               ? Theme.of(context).colorScheme.onPrimary
                                                               : Theme.of(context)
@@ -384,7 +377,7 @@ class _HomePageState extends State<HomePage> {
                                   ),
                                 ),
                                 SliverPadding(
-                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 112),
                                   sliver: MultiSliver(
                                     children: [
                                       SliverToBoxAdapter(
@@ -392,75 +385,65 @@ class _HomePageState extends State<HomePage> {
                                           padding: const EdgeInsets.fromLTRB(0, 24, 0, 16),
                                           child: Text(
                                             'Produtos',
-                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                  color: Colors.black,
-                                                  fontWeight: FontWeight.w700,
+                                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                  fontWeight: FontWeight.w600,
                                                 ),
                                           ),
                                         ),
                                       ),
                                       SliverVisibility(
                                         visible: products.isNotEmpty,
-                                        sliver: SliverAnimatedGrid(
-                                          gridDelegate: const SliverGridDelegateWithMaxCrossAxisExtent(
-                                            maxCrossAxisExtent: 200,
-                                            // mainAxisExtent: 128,
-                                            mainAxisSpacing: 16,
-                                            crossAxisSpacing: 16,
-                                            // childAspectRatio: 0.7,
+                                        sliver: SliverGrid.builder(
+                                          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                                            crossAxisCount: 2,
+                                            childAspectRatio: 0.7,
+                                            crossAxisSpacing: 24,
+                                            mainAxisSpacing: 24,
                                           ),
-                                          initialItemCount: products.length,
-                                          itemBuilder: (context, index, animation) {
-                                            return FadeTransition(
-                                              opacity: animation,
-                                              child: GestureDetector(
-                                                onTap: () {
-                                                  context.push(
-                                                    '${AppRoutes.product}/${products[index].id}',
-                                                  );
-                                                },
-                                                child: Container(
-                                                  decoration: BoxDecoration(
-                                                    borderRadius: BorderRadius.circular(8),
-                                                    color: Colors.grey.shade100,
-                                                  ),
-                                                  padding: const EdgeInsets.all(16),
-                                                  child: Column(
-                                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                                    children: [
-                                                      // Expanded(
-                                                      //   child: Container(
-                                                      //     decoration: BoxDecoration(
-                                                      //       borderRadius: BorderRadius.circular(8),
-                                                      //       color: Colors.grey.shade100,
-                                                      //     ),
-                                                      //   ),
-                                                      // ),
-                                                      // const SizedBox(height: 8),
-                                                      Text(
-                                                        products[index].name,
-                                                        style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                              color: Theme.of(context).colorScheme.onSurface,
-                                                              fontWeight: FontWeight.w500,
-                                                            ),
-                                                        maxLines: 2,
-                                                      ),
-                                                      Text(
-                                                        CurrencyFormat.formatCentsToReal(products[index].price),
-                                                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                              color: Theme.of(context)
-                                                                  .colorScheme
-                                                                  .onSurface
-                                                                  .withOpacity(0.5),
-                                                              fontWeight: FontWeight.w500,
-                                                            ),
-                                                        maxLines: 1,
-                                                      ),
-                                                    ],
-                                                  ),
+                                          itemCount: products.length,
+                                          itemBuilder: (context, index) {
+                                            return GestureDetector(
+                                              onTap: () {
+                                                context.push(
+                                                  '${AppRoutes.product}/${products[index].id}',
+                                                );
+                                              },
+                                              child: Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(.03),
+                                                ),
+                                                padding: const EdgeInsets.all(16),
+                                                child: Column(
+                                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                                  children: [
+                                                    const AspectRatio(
+                                                      aspectRatio: 1,
+                                                      child: Placeholder(),
+                                                    ),
+                                                    const SizedBox(height: 12),
+                                                    Text(
+                                                      products[index].name,
+                                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                            color: Theme.of(context).colorScheme.onSurface,
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      maxLines: 2,
+                                                    ),
+                                                    const SizedBox(height: 2),
+                                                    Text(
+                                                      CurrencyFormat.formatCentsToReal(products[index].price),
+                                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                            color:
+                                                                Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                                            fontWeight: FontWeight.w500,
+                                                          ),
+                                                      maxLines: 1,
+                                                    ),
+                                                  ],
                                                 ),
                                               ),
-                                              // child: OldProductItem(product: products[index]),
                                             );
                                           },
                                         ),
@@ -540,30 +523,48 @@ class _HomePageState extends State<HomePage> {
                                           borderRadius: BorderRadius.circular(64),
                                           color: Theme.of(context).colorScheme.primary.withOpacity(.1),
                                         ),
-                                        child: CachedNetworkImage(
-                                          imageUrl: user.photoUrl,
-                                          height: 64,
-                                          width: 64,
-                                          fit: BoxFit.cover,
-                                          color: Theme.of(context).colorScheme.primary.withOpacity(.1),
-                                          errorWidget: (context, url, error) => Container(
-                                            decoration: BoxDecoration(
-                                              borderRadius: BorderRadius.circular(64),
-                                              color: Theme.of(context).colorScheme.primary.withOpacity(.1),
-                                            ),
-                                            alignment: Alignment.center,
-                                            child: Text(
-                                              user.name.length > 2
-                                                  ? user.name.substring(0, 2).toUpperCase()
-                                                  : user.name.substring(0, 1).toUpperCase(),
-                                              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                                                    color: Theme.of(context).colorScheme.onSurface,
-                                                    fontWeight: FontWeight.w500,
+                                        child: user.photoUrl.isNotEmpty
+                                            ? CachedNetworkImage(
+                                                imageUrl: user.photoUrl,
+                                                height: 64,
+                                                width: 64,
+                                                fit: BoxFit.cover,
+                                                color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                                errorWidget: (context, url, error) => Container(
+                                                  decoration: BoxDecoration(
+                                                    borderRadius: BorderRadius.circular(64),
+                                                    color: Theme.of(context).colorScheme.primary.withOpacity(.1),
                                                   ),
-                                              textAlign: TextAlign.center,
-                                            ),
-                                          ),
-                                        ),
+                                                  alignment: Alignment.center,
+                                                  child: Text(
+                                                    user.name.length > 2
+                                                        ? user.name.substring(0, 2).toUpperCase()
+                                                        : user.name.substring(0, 1).toUpperCase(),
+                                                    style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                          color: Theme.of(context).colorScheme.onSurface,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                    textAlign: TextAlign.center,
+                                                  ),
+                                                ),
+                                              )
+                                            : Container(
+                                                decoration: BoxDecoration(
+                                                  borderRadius: BorderRadius.circular(64),
+                                                  color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                                ),
+                                                alignment: Alignment.center,
+                                                child: Text(
+                                                  user.name.length > 2
+                                                      ? user.name.substring(0, 2).toUpperCase()
+                                                      : user.name.substring(0, 1).toUpperCase(),
+                                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                        fontWeight: FontWeight.w500,
+                                                      ),
+                                                  textAlign: TextAlign.center,
+                                                ),
+                                              ),
                                       ),
                                       Expanded(
                                         child: Padding(
@@ -609,11 +610,11 @@ class _HomePageState extends State<HomePage> {
                                           textAlign: TextAlign.start,
                                         ),
                                       ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(height: 12),
                                       InkWell(
                                         onTap: () {},
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
@@ -642,7 +643,7 @@ class _HomePageState extends State<HomePage> {
                                       InkWell(
                                         onTap: () {},
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
@@ -671,7 +672,7 @@ class _HomePageState extends State<HomePage> {
                                       InkWell(
                                         onTap: () {},
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
@@ -730,92 +731,96 @@ class _HomePageState extends State<HomePage> {
                                           textAlign: TextAlign.start,
                                         ),
                                       ),
-                                      const SizedBox(height: 16),
+                                      const SizedBox(height: 12),
                                       InkWell(
                                         onTap: () {
-                                          showModalBottomSheet(
-                                            context: context,
-                                            backgroundColor: Theme.of(context).colorScheme.background,
-                                            shape: const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.only(
-                                                topLeft: Radius.circular(24),
-                                                topRight: Radius.circular(24),
-                                              ),
-                                            ),
-                                            useSafeArea: true,
-                                            builder: (context) {
-                                              return Column(
-                                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                                mainAxisSize: MainAxisSize.min,
-                                                children: [
-                                                  Row(
-                                                    mainAxisAlignment: MainAxisAlignment.center,
-                                                    children: [
-                                                      Container(
-                                                        margin: const EdgeInsets.symmetric(vertical: 16),
-                                                        height: 4,
-                                                        width: 64,
-                                                        decoration: BoxDecoration(
-                                                          borderRadius: BorderRadius.circular(2),
-                                                          color:
-                                                              Theme.of(context).colorScheme.onSurface.withOpacity(.2),
-                                                        ),
-                                                      ),
-                                                    ],
-                                                  ),
-                                                  Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                                    child: Text(
-                                                      'Criar loja',
-                                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                            color: Colors.black,
-                                                            fontWeight: FontWeight.w700,
-                                                          ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                  Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                                    child: Text(
-                                                      'Para criar uma loja, você precisa ser um vendedor.',
-                                                      style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                            color:
-                                                                Theme.of(context).colorScheme.onSurface.withOpacity(.5),
-                                                            fontWeight: FontWeight.w500,
-                                                          ),
-                                                      textAlign: TextAlign.center,
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 16),
-                                                  Padding(
-                                                    padding: const EdgeInsets.symmetric(horizontal: 24),
-                                                    child: FilledButton(
-                                                      onPressed: () {},
-                                                      style: FilledButton.styleFrom(
-                                                        backgroundColor: Theme.of(context).colorScheme.primary,
-                                                        shape: RoundedRectangleBorder(
-                                                          borderRadius: BorderRadius.circular(8),
-                                                        ),
-                                                        padding: const EdgeInsets.symmetric(vertical: 18),
-                                                        elevation: 0,
-                                                      ),
-                                                      child: Text(
-                                                        'Tornar-se vendedor',
-                                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                              color: Theme.of(context).colorScheme.onPrimary,
-                                                              fontWeight: FontWeight.w500,
-                                                            ),
-                                                      ),
-                                                    ),
-                                                  ),
-                                                  const SizedBox(height: 24),
-                                                ],
-                                              );
-                                            },
+                                          // TODO: Verificar se o usuário já tem sua loja criada
+                                          context.push(
+                                            '${AppRoutes.seller}/${user.id}',
                                           );
+                                          // showModalBottomSheet(
+                                          //   context: context,
+                                          //   backgroundColor: Theme.of(context).colorScheme.background,
+                                          //   shape: const RoundedRectangleBorder(
+                                          //     borderRadius: BorderRadius.only(
+                                          //       topLeft: Radius.circular(24),
+                                          //       topRight: Radius.circular(24),
+                                          //     ),
+                                          //   ),
+                                          //   useSafeArea: true,
+                                          //   builder: (context) {
+                                          //     return Column(
+                                          //       crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          //       mainAxisSize: MainAxisSize.min,
+                                          //       children: [
+                                          //         Row(
+                                          //           mainAxisAlignment: MainAxisAlignment.center,
+                                          //           children: [
+                                          //             Container(
+                                          //               margin: const EdgeInsets.symmetric(vertical: 16),
+                                          //               height: 4,
+                                          //               width: 64,
+                                          //               decoration: BoxDecoration(
+                                          //                 borderRadius: BorderRadius.circular(2),
+                                          //                 color:
+                                          //                     Theme.of(context).colorScheme.onSurface.withOpacity(.2),
+                                          //               ),
+                                          //             ),
+                                          //           ],
+                                          //         ),
+                                          //         Padding(
+                                          //           padding: const EdgeInsets.symmetric(horizontal: 24),
+                                          //           child: Text(
+                                          //             'Criar loja',
+                                          //             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          //                   color: Colors.black,
+                                          //                   fontWeight: FontWeight.w700,
+                                          //                 ),
+                                          //           ),
+                                          //         ),
+                                          //         const SizedBox(height: 16),
+                                          //         Padding(
+                                          //           padding: const EdgeInsets.symmetric(horizontal: 24),
+                                          //           child: Text(
+                                          //             'Para criar uma loja, você precisa ser um vendedor.',
+                                          //             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                          //                   color:
+                                          //                       Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                          //                   fontWeight: FontWeight.w500,
+                                          //                 ),
+                                          //             textAlign: TextAlign.center,
+                                          //           ),
+                                          //         ),
+                                          //         const SizedBox(height: 16),
+                                          //         Padding(
+                                          //           padding: const EdgeInsets.symmetric(horizontal: 24),
+                                          //           child: FilledButton(
+                                          //             onPressed: () {},
+                                          //             style: FilledButton.styleFrom(
+                                          //               backgroundColor: Theme.of(context).colorScheme.primary,
+                                          //               shape: RoundedRectangleBorder(
+                                          //                 borderRadius: BorderRadius.circular(8),
+                                          //               ),
+                                          //               padding: const EdgeInsets.symmetric(vertical: 18),
+                                          //               elevation: 0,
+                                          //             ),
+                                          //             child: Text(
+                                          //               'Tornar-se vendedor',
+                                          //               style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                          //                     color: Theme.of(context).colorScheme.onPrimary,
+                                          //                     fontWeight: FontWeight.w500,
+                                          //                   ),
+                                          //             ),
+                                          //           ),
+                                          //         ),
+                                          //         const SizedBox(height: 24),
+                                          //       ],
+                                          //     );
+                                          //   },
+                                          // );
                                         },
                                         child: Container(
-                                          padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 24),
+                                          padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
@@ -867,9 +872,9 @@ class _HomePageState extends State<HomePage> {
                                     style: FilledButton.styleFrom(
                                       backgroundColor: Theme.of(context).colorScheme.onBackground,
                                       shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8),
+                                        borderRadius: BorderRadius.circular(12),
                                       ),
-                                      padding: const EdgeInsets.symmetric(vertical: 18),
+                                      padding: const EdgeInsets.symmetric(vertical: 22),
                                       elevation: 0,
                                     ),
                                     child: Text(
@@ -891,111 +896,115 @@ class _HomePageState extends State<HomePage> {
                 ),
                 SafeArea(
                   top: false,
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(64),
-                      child: BackdropFilter(
-                        filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Theme.of(context).colorScheme.surface.withOpacity(.7),
-                            border: Border.all(
-                              color: Theme.of(context).colorScheme.onSurface.withOpacity(.05),
+                  child: Padding(
+                    padding: const EdgeInsets.only(bottom: 12),
+                    child: Align(
+                      alignment: Alignment.bottomCenter,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(64),
+                        child: BackdropFilter(
+                          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).colorScheme.surface.withOpacity(.7),
+                              border: Border.all(
+                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.1),
+                              ),
+                              borderRadius: BorderRadius.circular(64),
                             ),
-                            borderRadius: BorderRadius.circular(64),
-                          ),
-                          padding: const EdgeInsets.all(8),
-                          child: Stack(
-                            children: [
-                              AnimatedAlign(
-                                heightFactor: 1,
-                                widthFactor: 3.5,
-                                alignment: _currentPageViewIndex == 0
-                                    ? Alignment.centerLeft
-                                    : _currentPageViewIndex == 1
-                                        ? Alignment.center
-                                        : Alignment.centerRight,
-                                duration: const Duration(milliseconds: 150),
-                                curve: Curves.easeInOut,
-                                child: Container(
-                                  height: 48,
-                                  width: 48,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(24),
-                                    color: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                            padding: const EdgeInsets.all(6),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                InkWell(
+                                  onTap: () {
+                                    _changePageView(0);
+                                    _pageController.jumpToPage(0);
+                                  },
+                                  splashColor: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                  highlightColor: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                  borderRadius: BorderRadius.circular(64),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    height: 56,
+                                    width: 56,
+                                    decoration: BoxDecoration(
+                                      color: _currentPageViewIndex == 0
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: AppSvgIconComponent(
+                                      assetName: AppIcons.home,
+                                      size: 32,
+                                      color: _currentPageViewIndex == 0
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                    ),
                                   ),
                                 ),
-                              ),
-                              Row(
-                                mainAxisSize: MainAxisSize.min,
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  InkWell(
-                                    onTap: () {
-                                      _changePageView(0);
-                                      _pageController.jumpToPage(0);
-                                    },
-                                    child: Container(
-                                      height: 48,
-                                      width: 48,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      padding: const EdgeInsets.all(10),
-                                      child: AppSvgIconComponent(
-                                        assetName: AppIcons.home,
-                                        color: _currentPageViewIndex == 0
-                                            ? Theme.of(context).colorScheme.primary
-                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                      ),
+                                const SizedBox(width: 8),
+                                InkWell(
+                                  onTap: () {
+                                    _changePageView(1);
+                                    _pageController.jumpToPage(1);
+                                  },
+                                  splashColor: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                  highlightColor: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                  borderRadius: BorderRadius.circular(64),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    height: 56,
+                                    width: 56,
+                                    decoration: BoxDecoration(
+                                      color: _currentPageViewIndex == 1
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: AppSvgIconComponent(
+                                      assetName: AppIcons.shoppingCart,
+                                      size: 32,
+                                      color: _currentPageViewIndex == 1
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  InkWell(
-                                    onTap: () {
-                                      _changePageView(1);
-                                      _pageController.jumpToPage(1);
-                                    },
-                                    child: Container(
-                                      height: 48,
-                                      width: 48,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      padding: const EdgeInsets.all(10),
-                                      child: AppSvgIconComponent(
-                                        assetName: AppIcons.shoppingCart,
-                                        color: _currentPageViewIndex == 1
-                                            ? Theme.of(context).colorScheme.primary
-                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                      ),
+                                ),
+                                const SizedBox(width: 8),
+                                InkWell(
+                                  onTap: () {
+                                    _changePageView(2);
+                                    _pageController.jumpToPage(2);
+                                  },
+                                  splashColor: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                  highlightColor: Theme.of(context).colorScheme.primary.withOpacity(.1),
+                                  borderRadius: BorderRadius.circular(64),
+                                  child: AnimatedContainer(
+                                    duration: const Duration(milliseconds: 100),
+                                    height: 56,
+                                    width: 56,
+                                    decoration: BoxDecoration(
+                                      color: _currentPageViewIndex == 2
+                                          ? Theme.of(context).colorScheme.primary.withOpacity(.1)
+                                          : Colors.transparent,
+                                      borderRadius: BorderRadius.circular(32),
+                                    ),
+                                    alignment: Alignment.center,
+                                    child: AppSvgIconComponent(
+                                      assetName: AppIcons.profile,
+                                      size: 32,
+                                      color: _currentPageViewIndex == 2
+                                          ? Theme.of(context).colorScheme.primary
+                                          : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
                                     ),
                                   ),
-                                  const SizedBox(width: 12),
-                                  InkWell(
-                                    onTap: () {
-                                      _changePageView(2);
-                                      _pageController.jumpToPage(2);
-                                    },
-                                    child: Container(
-                                      height: 48,
-                                      width: 48,
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(24),
-                                      ),
-                                      padding: const EdgeInsets.all(10),
-                                      child: AppSvgIconComponent(
-                                        assetName: AppIcons.profile,
-                                        color: _currentPageViewIndex == 2
-                                            ? Theme.of(context).colorScheme.primary
-                                            : Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                                ),
+                              ],
+                            ),
                           ),
                         ),
                       ),
