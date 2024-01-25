@@ -13,7 +13,11 @@ class SupabaseFavoritesProductsRepository implements FavoritesProductsRepository
   @override
   Future<List<ProductEntity>> fetchProductList({required String userId}) async {
     try {
-      final response = await client.from('favorite').select('product(*)').eq('user_id', userId);
+      final response = await client
+          .from('favorite')
+          .select('product(*)')
+          .eq('user_id', userId)
+          .order('created_at', ascending: false);
       if (response.isNotEmpty) {
         final products = response.map((e) => ProductDto.fromMap(e['product']).toEntity()).toList();
         return products;

@@ -13,7 +13,8 @@ class SupabaseShopProductRepository implements ShopProductRepository {
   @override
   Future<List<ProductEntity>> fetchProductList({required String sellerId}) async {
     try {
-      final response = await client.from('product').select().eq('seller_id', sellerId);
+      final response =
+          await client.from('product').select().eq('seller_id', sellerId).order('created_at', ascending: false);
       if (response.isNotEmpty) {
         final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
         return products;

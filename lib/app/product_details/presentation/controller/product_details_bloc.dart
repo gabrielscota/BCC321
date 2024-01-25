@@ -45,6 +45,7 @@ class ProductDetailsBloc extends Bloc<ProductDetailsEvent, ProductDetailsState> 
         return emit(ProductDetailsPageErrorState(message: favoriteResult.left.message));
       } else if (favoriteResult.isRight) {
         _product = _product.copyWith(isFavorited: favoriteResult.right);
+        emit(ProductDetailsPageFavoriteSuccessState(isFavorited: favoriteResult.right));
         return emit(ProductDetailsPageLoadedState(product: _product));
       }
     }

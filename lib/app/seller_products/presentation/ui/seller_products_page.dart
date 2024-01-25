@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
+import '../../../../app_routes.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../shared/utils/utils.dart';
 import '../../../../shared/widgets/widgets.dart';
@@ -18,7 +19,7 @@ class SellerProductsPage extends StatefulWidget {
   State<SellerProductsPage> createState() => _SellerProductsPageState();
 }
 
-class _SellerProductsPageState extends State<SellerProductsPage> {
+class _SellerProductsPageState extends State<SellerProductsPage> with RouteAware {
   late final SellerProductsBloc _bloc;
 
   @override
@@ -30,12 +31,59 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
   }
 
   @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AppRoutes.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    AppRoutes.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+
+    _bloc.add(SellerProductsStartedEvent(sellerId: widget.sellerId));
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: BlocBuilder<SellerProductsBloc, SellerProductsState>(
+      body: BlocConsumer<SellerProductsBloc, SellerProductsState>(
+        listener: (context, state) {
+          if (state is SellerProductsPageDeleteSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(seconds: 2),
+                content: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSvgIconComponent(
+                      assetName: AppIcons.delete,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Produto excluído com sucesso!',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                    ),
+                  ],
+                ),
+                backgroundColor: Theme.of(context).colorScheme.onSurface,
+                padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is SellerProductsPageLoadingState) {
             return CustomScrollView(
@@ -190,7 +238,18 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                                       children: [
                                         AppOutlinedSquaredIconButtonComponent(
                                           icon: AppIcons.edit,
-                                          onPressed: () {},
+                                          onPressed: () {
+                                            context.push(
+                                              AppRoutes.editProduct,
+                                              extra: {
+                                                'productId': products[index].id,
+                                                'name': products[index].name,
+                                                'description': products[index].description,
+                                                'price': products[index].price,
+                                                'stockQuantity': products[index].stockQuantity,
+                                              },
+                                            );
+                                          },
                                         ),
                                         const SizedBox(width: 12),
                                         AppOutlinedSquaredIconButtonComponent(
@@ -287,7 +346,14 @@ class _SellerProductsPageState extends State<SellerProductsPage> {
                                                             const SizedBox(width: 16),
                                                             Expanded(
                                                               child: FilledButton(
-                                                                onPressed: () {},
+                                                                onPressed: () {
+                                                                  _bloc.add(
+                                                                    SellerProductsDeleteProductEvent(
+                                                                      productId: products[index].id,
+                                                                    ),
+                                                                  );
+                                                                  context.pop();
+                                                                },
                                                                 style: FilledButton.styleFrom(
                                                                   backgroundColor: Theme.of(context).colorScheme.error,
                                                                   shape: RoundedRectangleBorder(

@@ -13,7 +13,8 @@ class SupabaseSellerProductsRepository implements SellerProductsRepository {
   @override
   Future<List<ProductEntity>> fetchProductList({required String sellerId}) async {
     try {
-      final response = await client.from('product').select().eq('seller_id', sellerId);
+      final response =
+          await client.from('product').select().eq('seller_id', sellerId).order('created_at', ascending: false);
       if (response.isNotEmpty) {
         final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
         return products;
@@ -22,6 +23,15 @@ class SupabaseSellerProductsRepository implements SellerProductsRepository {
       }
     } on DtoFailure catch (_) {
       rethrow;
+    } catch (e) {
+      throw ApiFailure(message: e.toString());
+    }
+  }
+
+  @override
+  Future<void> deleteProduct({required String productId}) async {
+    try {
+      await client.from('product').delete().eq('id', productId);
     } catch (e) {
       throw ApiFailure(message: e.toString());
     }

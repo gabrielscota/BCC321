@@ -40,11 +40,12 @@ class _SellerCreatePageState extends State<SellerCreatePage> {
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocConsumer<SellerCreateBloc, SellerCreateState>(
-        listener: (context, state) async {
+        listener: (context, state) {
           if (state is SellerCreateLoadingState) {
             showDialog(context: context, builder: (_) => const Center(child: CircularProgressIndicator()));
           } else if (state is SellerCreateSuccessfullState) {
             if (context.canPop()) {
+              context.pop();
               context.pop();
             }
             ScaffoldMessenger.of(context).showSnackBar(
@@ -71,9 +72,6 @@ class _SellerCreatePageState extends State<SellerCreatePage> {
                 padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
               ),
             );
-            await Future.delayed(const Duration(milliseconds: 400)).then((value) {
-              context.pop();
-            });
           } else if (state is SellerCreateErrorState) {
             if (context.canPop()) {
               context.pop();

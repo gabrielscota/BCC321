@@ -7,3 +7,9 @@ class SellerProductsStartedEvent extends SellerProductsEvent {
 
   SellerProductsStartedEvent({required this.sellerId});
 }
+
+class SellerProductsDeleteProductEvent extends SellerProductsEvent {
+  final String productId;
+
+  SellerProductsDeleteProductEvent({required this.productId});
+}

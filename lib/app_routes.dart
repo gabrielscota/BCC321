@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/add_product/add_product.dart';
+import 'app/edit_product/edit_product.dart';
 import 'app/favorites/favorites.dart';
 import 'app/home/home.dart';
 import 'app/product_details/product_details.dart';
@@ -17,6 +18,7 @@ import 'app/splash/splash.dart';
 
 class AppRoutes {
   static const String addProduct = '/add-product';
+  static const String editProduct = '/edit-product';
   static const String favorites = '/favorites';
   static const String home = '/home';
   static const String product = '/product';
@@ -49,6 +51,27 @@ class AppRoutes {
               ),
             ),
             child: AddProductPage(sellerId: state.pathParameters['sellerId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.editProduct,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => EditProductBloc(
+              editProductUseCase: EditProductUseCase(
+                repository: SupabaseEditProductRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: EditProductPage(product: state.extra as Map),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,
@@ -195,6 +218,9 @@ class AppRoutes {
           child: BlocProvider(
             create: (context) => SellerProductsBloc(
               fetchSellerProductListUseCase: FetchSellerProductsListUseCase(
+                repository: SupabaseSellerProductsRepository(client: Supabase.instance.client),
+              ),
+              deleteProductUseCase: DeleteProductUseCase(
                 repository: SupabaseSellerProductsRepository(client: Supabase.instance.client),
               ),
             ),

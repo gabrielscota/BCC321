@@ -211,6 +211,35 @@ class _SellerPageState extends State<SellerPage> {
                                   ),
                                 ),
                               ),
+                              InkWell(
+                                onTap: () {},
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      const AppSvgIconComponent(
+                                        assetName: AppIcons.discountTicket,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Expanded(
+                                        child: Text(
+                                          'Cupons de desconto',
+                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                color: Theme.of(context).colorScheme.onSurface,
+                                                fontWeight: FontWeight.w500,
+                                              ),
+                                        ),
+                                      ),
+                                      const SizedBox(width: 12),
+                                      AppSvgIconComponent(
+                                        assetName: AppIcons.arrowRight,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.7),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
                               const SizedBox(height: 24),
                               Container(
                                 margin: const EdgeInsets.symmetric(horizontal: 24),

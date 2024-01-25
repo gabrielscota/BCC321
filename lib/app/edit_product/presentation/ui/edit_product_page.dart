@@ -5,21 +5,24 @@ import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 import '../../../../core/theme/theme.dart';
+import '../../../../shared/utils/utils.dart';
 import '../../../../shared/widgets/widgets.dart';
-import '../controller/add_product_bloc.dart';
+import '../controller/edit_product_bloc.dart';
 
-class AddProductPage extends StatefulWidget {
+class EditProductPage extends StatefulWidget {
   final UniqueKey? heroKey;
-  final String sellerId;
+  final Map product;
 
-  const AddProductPage({super.key, this.heroKey, required this.sellerId});
+  const EditProductPage({super.key, this.heroKey, required this.product});
 
   @override
-  State<AddProductPage> createState() => _AddProductPageState();
+  State<EditProductPage> createState() => _EditProductPageState();
 }
 
-class _AddProductPageState extends State<AddProductPage> {
-  late final AddProductBloc _bloc;
+class _EditProductPageState extends State<EditProductPage> {
+  late final EditProductBloc _bloc;
+
+  late final String _productId;
 
   late final TextEditingController _nameController;
   late final TextEditingController _descriptionController;
@@ -30,12 +33,16 @@ class _AddProductPageState extends State<AddProductPage> {
   void initState() {
     super.initState();
 
-    _bloc = BlocProvider.of<AddProductBloc>(context);
+    _bloc = BlocProvider.of<EditProductBloc>(context);
 
-    _nameController = TextEditingController();
-    _descriptionController = TextEditingController();
-    _priceController = TextEditingController();
-    _stockQuantityController = TextEditingController();
+    _productId = widget.product['productId'];
+
+    _nameController = TextEditingController(text: widget.product['name']);
+    _descriptionController = TextEditingController(text: widget.product['description']);
+    _priceController = TextEditingController(
+      text: CurrencyFormat.formatCentsToReal(widget.product['price']),
+    );
+    _stockQuantityController = TextEditingController(text: widget.product['stockQuantity'].toString());
   }
 
   @override
@@ -44,11 +51,11 @@ class _AddProductPageState extends State<AddProductPage> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: BlocConsumer<AddProductBloc, AddProductState>(
+      body: BlocConsumer<EditProductBloc, EditProductState>(
         listener: (context, state) {
-          if (state is AddProductLoadingState) {
+          if (state is EditProductLoadingState) {
             showDialog(context: context, builder: (_) => const Center(child: CircularProgressIndicator()));
-          } else if (state is AddProductSuccessfullState) {
+          } else if (state is EditProductSuccessfullState) {
             if (context.canPop()) {
               context.pop();
               context.pop();
@@ -60,13 +67,13 @@ class _AddProductPageState extends State<AddProductPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     AppSvgIconComponent(
-                      assetName: AppIcons.deliveryBoxAdd,
+                      assetName: AppIcons.edit,
                       size: 28,
                       color: Theme.of(context).colorScheme.surface,
                     ),
                     const SizedBox(width: 12),
                     Text(
-                      'Produto cadastrado com sucesso!',
+                      'Produto editado com sucesso!',
                       style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                             color: Theme.of(context).colorScheme.surface,
                           ),
@@ -77,7 +84,7 @@ class _AddProductPageState extends State<AddProductPage> {
                 padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
               ),
             );
-          } else if (state is AddProductErrorState) {
+          } else if (state is EditProductErrorState) {
             if (context.canPop()) {
               context.pop();
             }
@@ -120,12 +127,12 @@ class _AddProductPageState extends State<AddProductPage> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   const AppSvgIconComponent(
-                                    assetName: AppIcons.deliveryBoxAdd,
+                                    assetName: AppIcons.edit,
                                     size: 48,
                                   ),
                                   const SizedBox(height: 8),
                                   Text(
-                                    'Novo produto',
+                                    'Edição do produto',
                                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                                           color: Colors.black,
                                           fontWeight: FontWeight.w600,
@@ -139,6 +146,8 @@ class _AddProductPageState extends State<AddProductPage> {
                             padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
                             sliver: SliverToBoxAdapter(
                               child: TextField(
+                                enabled: false,
+                                readOnly: true,
                                 controller: _nameController,
                                 cursorHeight: 24,
                                 textAlign: TextAlign.start,
@@ -161,6 +170,11 @@ class _AddProductPageState extends State<AddProductPage> {
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
                                   alignLabelWithHint: true,
                                   isDense: true,
+                                  suffixIconConstraints: const BoxConstraints(maxHeight: 64, maxWidth: 64),
+                                  suffixIcon: const Padding(
+                                    padding: EdgeInsets.only(right: 16),
+                                    child: AppSvgIconComponent(assetName: AppIcons.lock),
+                                  ),
                                 ),
                                 textAlignVertical: TextAlignVertical.center,
                                 onTapOutside: (_) => FocusScope.of(context).unfocus(),
@@ -204,6 +218,8 @@ class _AddProductPageState extends State<AddProductPage> {
                             padding: const EdgeInsets.fromLTRB(24, 16, 24, 0),
                             sliver: SliverToBoxAdapter(
                               child: TextField(
+                                enabled: false,
+                                readOnly: true,
                                 controller: _priceController,
                                 cursorHeight: 24,
                                 textAlign: TextAlign.start,
@@ -226,6 +242,11 @@ class _AddProductPageState extends State<AddProductPage> {
                                   contentPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
                                   alignLabelWithHint: true,
                                   isDense: true,
+                                  suffixIconConstraints: const BoxConstraints(maxHeight: 64, maxWidth: 64),
+                                  suffixIcon: const Padding(
+                                    padding: EdgeInsets.only(right: 16),
+                                    child: AppSvgIconComponent(assetName: AppIcons.lock),
+                                  ),
                                 ),
                                 textAlignVertical: TextAlignVertical.center,
                                 onTapOutside: (_) => FocusScope.of(context).unfocus(),
@@ -288,14 +309,10 @@ class _AddProductPageState extends State<AddProductPage> {
                         onPressed: () {
                           FocusScope.of(context).unfocus();
                           _bloc.add(
-                            AddProductStartedEvent(
-                              name: _nameController.text,
+                            EditProductStartedEvent(
+                              productId: _productId,
                               description: _descriptionController.text,
-                              price: int.tryParse(_priceController.text.replaceAll(RegExp(r'[R\$\.\,]'), '')) ?? 0,
-                              // FIXME: categoryId is hardcoded
-                              categoryId: '8',
                               stockQuantity: int.parse(_stockQuantityController.text),
-                              sellerId: int.parse(widget.sellerId),
                             ),
                           );
                         },
@@ -308,7 +325,7 @@ class _AddProductPageState extends State<AddProductPage> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Cadastrar',
+                          'Atualizar',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 fontWeight: FontWeight.w500,

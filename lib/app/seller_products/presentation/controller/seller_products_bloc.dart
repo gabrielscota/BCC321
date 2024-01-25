@@ -10,12 +10,17 @@ part '../state/seller_products_state.dart';
 
 class SellerProductsBloc extends Bloc<SellerProductsEvent, SellerProductsState> {
   final FetchSellerProductsListUseCase fetchSellerProductListUseCase;
+  final DeleteProductUseCase deleteProductUseCase;
 
   SellerProductsBloc({
     required this.fetchSellerProductListUseCase,
+    required this.deleteProductUseCase,
   }) : super(SellerProductsInitialState()) {
     on<SellerProductsStartedEvent>(_load);
+    on<SellerProductsDeleteProductEvent>(_deleteProduct);
   }
+
+  late List<ProductEntity> _products = [];
 
   FutureOr<void> _load(SellerProductsEvent event, Emitter<SellerProductsState> emit) async {
     if (event is SellerProductsStartedEvent) {
@@ -26,11 +31,28 @@ class SellerProductsBloc extends Bloc<SellerProductsEvent, SellerProductsState> 
       if (productResult.isLeft) {
         return emit(SellerProductsPageErrorState(message: productResult.left.message));
       } else if (productResult.isRight) {
+        _products = productResult.right;
         return emit(
           SellerProductsPageLoadedState(
             products: productResult.right,
           ),
         );
+      }
+    }
+  }
+
+  FutureOr<void> _deleteProduct(SellerProductsEvent event, Emitter<SellerProductsState> emit) async {
+    if (event is SellerProductsDeleteProductEvent) {
+      emit(SellerProductsPageLoadingState());
+
+      final deleteResult = await deleteProductUseCase.call(productId: event.productId);
+
+      if (deleteResult.isLeft) {
+        return emit(SellerProductsPageErrorState(message: deleteResult.left.message));
+      } else if (deleteResult.isRight) {
+        _products.removeWhere((element) => element.id == event.productId);
+        emit(SellerProductsPageDeleteSuccessState());
+        return emit(SellerProductsPageLoadedState(products: _products));
       }
     }
   }

@@ -8,6 +8,7 @@ class AppIcons {
   static const String deliveryBoxAdd = 'assets/icons/delivery-add-plus.svg';
   static const String deliveryBox = 'assets/icons/delivery-box.svg';
   static const String deliveryBoxes = 'assets/icons/delivery-boxes.svg';
+  static const String discountTicket = 'assets/icons/discount-ticket.svg';
   static const String edit = 'assets/icons/edit.svg';
   static const String eye = 'assets/icons/eye.svg';
   static const String eyeOff = 'assets/icons/eye-off.svg';
@@ -17,6 +18,7 @@ class AppIcons {
   static const String home = 'assets/icons/home.svg';
   static const String key = 'assets/icons/key.svg';
   static const String location = 'assets/icons/location.svg';
+  static const String lock = 'assets/icons/lock.svg';
   static const String mention = 'assets/icons/mention.svg';
   static const String message = 'assets/icons/message.svg';
   static const String plus = 'assets/icons/plus.svg';

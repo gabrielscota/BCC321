@@ -17,3 +17,5 @@ class SellerProductsPageErrorState extends SellerProductsState {
 
   SellerProductsPageErrorState({required this.message});
 }
+
+class SellerProductsPageDeleteSuccessState extends SellerProductsState {}

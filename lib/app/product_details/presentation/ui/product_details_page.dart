@@ -38,7 +38,35 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
       extendBody: true,
       extendBodyBehindAppBar: true,
       backgroundColor: Theme.of(context).colorScheme.background,
-      body: BlocBuilder<ProductDetailsBloc, ProductDetailsState>(
+      body: BlocConsumer<ProductDetailsBloc, ProductDetailsState>(
+        listener: (context, state) {
+          if (state is ProductDetailsPageFavoriteSuccessState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(seconds: 2),
+                content: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSvgIconComponent(
+                      assetName: AppIcons.heart,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      state.isFavorited ? 'Produto adicionado aos favoritos' : 'Produto removido dos favoritos',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                    ),
+                  ],
+                ),
+                backgroundColor: Theme.of(context).colorScheme.onSurface,
+                padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+              ),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is ProductDetailsPageLoadingState) {
             return CustomScrollView(
@@ -149,18 +177,38 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      Container(
-                                        decoration: BoxDecoration(
-                                          color: Theme.of(context).colorScheme.primary,
-                                          borderRadius: BorderRadius.circular(4),
+                                      Visibility(
+                                        visible: state.product.stockQuantity > 0,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.primary,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                          child: Text(
+                                            'Em estoque',
+                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onPrimary,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                          ),
                                         ),
-                                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                                        child: Text(
-                                          'Em estoque',
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Theme.of(context).colorScheme.onPrimary,
-                                                fontWeight: FontWeight.w400,
-                                              ),
+                                      ),
+                                      Visibility(
+                                        visible: state.product.stockQuantity == 0,
+                                        child: Container(
+                                          decoration: BoxDecoration(
+                                            color: Theme.of(context).colorScheme.error,
+                                            borderRadius: BorderRadius.circular(4),
+                                          ),
+                                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                                          child: Text(
+                                            'Fora de estoque',
+                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onPrimary,
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                          ),
                                         ),
                                       ),
                                       Row(
@@ -480,7 +528,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                     onPressed: () async {
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
-                                          duration: const Duration(milliseconds: 1200),
+                                          duration: const Duration(seconds: 2),
                                           content: Row(
                                             crossAxisAlignment: CrossAxisAlignment.start,
                                             children: [
@@ -502,9 +550,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
                                         ),
                                       );
-                                      await Future.delayed(const Duration(milliseconds: 400)).then((value) {
-                                        context.pop();
-                                      });
                                     },
                                     style: FilledButton.styleFrom(
                                       backgroundColor: Theme.of(context).colorScheme.primary,

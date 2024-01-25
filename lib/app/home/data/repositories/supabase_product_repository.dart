@@ -13,7 +13,7 @@ class SupabaseProductRepository implements ProductRepository {
   @override
   Future<List<ProductEntity>> fetchProductList() async {
     try {
-      final response = await client.from('product').select();
+      final response = await client.from('product').select().order('created_at', ascending: false);
       if (response.isNotEmpty) {
         final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
         return products;

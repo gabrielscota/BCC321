@@ -17,3 +17,9 @@ class ProductDetailsPageErrorState extends ProductDetailsState {
 
   ProductDetailsPageErrorState({required this.message});
 }
+
+class ProductDetailsPageFavoriteSuccessState extends ProductDetailsState {
+  final bool isFavorited;
+
+  ProductDetailsPageFavoriteSuccessState({required this.isFavorited});
+}
