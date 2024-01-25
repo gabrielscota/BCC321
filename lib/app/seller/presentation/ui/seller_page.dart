@@ -18,7 +18,7 @@ class SellerPage extends StatefulWidget {
   State<SellerPage> createState() => _SellerPageState();
 }
 
-class _SellerPageState extends State<SellerPage> {
+class _SellerPageState extends State<SellerPage> with RouteAware {
   late final SellerBloc _bloc;
 
   @override
@@ -26,6 +26,25 @@ class _SellerPageState extends State<SellerPage> {
     super.initState();
 
     _bloc = BlocProvider.of<SellerBloc>(context);
+    _bloc.add(SellerStartedEvent(sellerId: widget.sellerId));
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    AppRoutes.routeObserver.subscribe(this, ModalRoute.of(context) as PageRoute);
+  }
+
+  @override
+  void dispose() {
+    AppRoutes.routeObserver.unsubscribe(this);
+    super.dispose();
+  }
+
+  @override
+  void didPopNext() {
+    super.didPopNext();
+
     _bloc.add(SellerStartedEvent(sellerId: widget.sellerId));
   }
 
@@ -154,14 +173,23 @@ class _SellerPageState extends State<SellerPage> {
                               ),
                               const SizedBox(height: 12),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  context.push(
+                                    AppRoutes.shopInformation,
+                                    extra: {
+                                      'sellerId': widget.sellerId,
+                                      'shopName': seller.shopName,
+                                      'description': seller.description,
+                                    },
+                                  );
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       const AppSvgIconComponent(
-                                        assetName: AppIcons.profile,
+                                        assetName: AppIcons.buildingOffice,
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
@@ -189,15 +217,16 @@ class _SellerPageState extends State<SellerPage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const AppSvgIconComponent(
+                                      AppSvgIconComponent(
                                         assetName: AppIcons.deliveryBox,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           'Pedidos',
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface,
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
@@ -205,7 +234,7 @@ class _SellerPageState extends State<SellerPage> {
                                       const SizedBox(width: 12),
                                       AppSvgIconComponent(
                                         assetName: AppIcons.arrowRight,
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.7),
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                       ),
                                     ],
                                   ),
@@ -218,15 +247,16 @@ class _SellerPageState extends State<SellerPage> {
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      const AppSvgIconComponent(
+                                      AppSvgIconComponent(
                                         assetName: AppIcons.discountTicket,
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           'Cupons de desconto',
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface,
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
@@ -234,7 +264,7 @@ class _SellerPageState extends State<SellerPage> {
                                       const SizedBox(width: 12),
                                       AppSvgIconComponent(
                                         assetName: AppIcons.arrowRight,
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.7),
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                       ),
                                     ],
                                   ),

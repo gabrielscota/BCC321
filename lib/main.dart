@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:get_it/get_it.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
+import 'core/shopping_cart/shopping_cart_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -15,6 +17,9 @@ Future<void> main() async {
       anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
     ),
   ]);
+
+  final getIt = GetIt.instance;
+  getIt.registerSingleton<CartBloc>(CartBloc());
 
   runApp(const App());
 }

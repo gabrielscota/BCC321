@@ -3,10 +3,12 @@ import 'dart:ui';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
 import '../../../../app_routes.dart';
+import '../../../../core/shopping_cart/shopping_cart.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../shared/extensions/extensions.dart';
 import '../../../../shared/utils/utils.dart';
@@ -93,7 +95,38 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
       backgroundColor: Theme.of(context).colorScheme.background,
       body: BlocConsumer<HomeBloc, HomeState>(
         listener: (context, state) {
-          if (state is HomePageSignOutState) {
+          if (state is HomePageDialogLoadingState) {
+            showDialog(context: context, builder: (_) => const Center(child: CircularProgressIndicator()));
+          } else if (state is HomePageNewOrderSuccessState) {
+            if (context.canPop()) {
+              context.pop();
+            }
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(milliseconds: 1200),
+                content: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSvgIconComponent(
+                      assetName: AppIcons.shoppingCart,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Pedido realizado com sucesso!',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                    ),
+                  ],
+                ),
+                backgroundColor: Theme.of(context).colorScheme.onSurface,
+                padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+              ),
+            );
+            _changePageView(0);
+          } else if (state is HomePageSignOutState) {
             context.go(AppRoutes.signIn);
           }
         },
@@ -432,26 +465,295 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                       slivers: [
                         SliverSafeArea(
                           top: true,
-                          sliver: MultiSliver(
-                            children: [
-                              SliverPadding(
-                                padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
-                                sliver: SliverToBoxAdapter(
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Text(
-                                        'Meu carrinho',
-                                        style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                              color: Colors.black,
-                                              fontWeight: FontWeight.w600,
-                                            ),
+                          sliver: BlocBuilder<CartBloc, CartState>(
+                            bloc: GetIt.instance.get<CartBloc>(),
+                            builder: (context, state) {
+                              return MultiSliver(
+                                children: [
+                                  SliverPadding(
+                                    padding: const EdgeInsets.fromLTRB(24, 32, 24, 16),
+                                    sliver: SliverToBoxAdapter(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Meu carrinho',
+                                            style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                                                  color: Colors.black,
+                                                  fontWeight: FontWeight.w600,
+                                                ),
+                                          ),
+                                        ],
                                       ),
-                                    ],
+                                    ),
                                   ),
-                                ),
-                              ),
-                            ],
+                                  SliverVisibility(
+                                    visible: user.address.id.isNotEmpty,
+                                    sliver: SliverToBoxAdapter(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                                            child: Text(
+                                              'Endereço de entrega',
+                                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                    color: Colors.black,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                            ),
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                                            child: Text(
+                                              '${user.address.street}, ${user.address.number}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  SliverVisibility(
+                                    visible: state.items.isEmpty,
+                                    sliver: SliverToBoxAdapter(
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 64, vertical: 128),
+                                        child: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            const AppSvgIllustrationComponent(
+                                              assetName: AppIllustrations.emptyCart,
+                                              fit: BoxFit.fitHeight,
+                                              height: 200,
+                                            ),
+                                            const SizedBox(height: 32),
+                                            Text(
+                                              'Parece que seu carrinho está vazio, que tal adicionar alguns produtos?',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.5),
+                                                    fontWeight: FontWeight.w500,
+                                                  ),
+                                              textAlign: TextAlign.center,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  SliverVisibility(
+                                    visible: state.items.isNotEmpty,
+                                    sliver: MultiSliver(
+                                      children: [
+                                        SliverPadding(
+                                          padding: const EdgeInsets.symmetric(horizontal: 24),
+                                          sliver: SliverList.separated(
+                                            itemCount: state.items.length,
+                                            itemBuilder: (context, index) {
+                                              return Container(
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                                                  ),
+                                                  borderRadius: BorderRadius.circular(12),
+                                                  color: Theme.of(context).colorScheme.surface,
+                                                ),
+                                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                                                child: Row(
+                                                  children: [
+                                                    AppSvgIconComponent(
+                                                      assetName: AppIcons.deliveryBox,
+                                                      size: 48,
+                                                      color: Theme.of(context).colorScheme.onSurface.withOpacity(.8),
+                                                    ),
+                                                    const SizedBox(width: 16),
+                                                    Expanded(
+                                                      child: Column(
+                                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                                        children: [
+                                                          Text(
+                                                            state.items[index]['name'],
+                                                            style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                                  fontWeight: FontWeight.w500,
+                                                                ),
+                                                            maxLines: 2,
+                                                          ),
+                                                          Text(
+                                                            CurrencyFormat.formatCentsToReal(
+                                                                state.items[index]['price']),
+                                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                  color: Theme.of(context).colorScheme.onSurface,
+                                                                  fontWeight: FontWeight.w500,
+                                                                ),
+                                                            maxLines: 1,
+                                                          ),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                    AppOutlinedSquaredIconButtonComponent(
+                                                      icon: AppIcons.delete,
+                                                      onPressed: () {
+                                                        final cartBloc = GetIt.instance.get<CartBloc>();
+                                                        cartBloc.add(
+                                                          CartRemoveEvent(
+                                                            itemId: state.items[index]['id'],
+                                                          ),
+                                                        );
+                                                      },
+                                                    ),
+                                                  ],
+                                                ),
+                                              );
+                                            },
+                                            separatorBuilder: (context, index) => const SizedBox(height: 16),
+                                          ),
+                                        ),
+                                        SliverPadding(
+                                          padding: const EdgeInsets.fromLTRB(24, 32, 24, 0),
+                                          sliver: SliverToBoxAdapter(
+                                            child: FilledButton(
+                                              onPressed: () {
+                                                if (_bloc.userHasAddress) {
+                                                  _bloc.add(
+                                                    HomeNewOrderEvent(
+                                                      items: state.items,
+                                                      addressId: user.address.id,
+                                                      userId: user.id,
+                                                    ),
+                                                  );
+                                                } else {
+                                                  showModalBottomSheet(
+                                                    context: context,
+                                                    backgroundColor: Theme.of(context).colorScheme.background,
+                                                    shape: const RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.only(
+                                                        topLeft: Radius.circular(24),
+                                                        topRight: Radius.circular(24),
+                                                      ),
+                                                    ),
+                                                    useSafeArea: true,
+                                                    builder: (context) {
+                                                      return SafeArea(
+                                                        child: Column(
+                                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                          mainAxisSize: MainAxisSize.min,
+                                                          children: [
+                                                            Row(
+                                                              mainAxisAlignment: MainAxisAlignment.center,
+                                                              children: [
+                                                                Container(
+                                                                  margin: const EdgeInsets.symmetric(vertical: 16),
+                                                                  height: 4,
+                                                                  width: 64,
+                                                                  decoration: BoxDecoration(
+                                                                    borderRadius: BorderRadius.circular(2),
+                                                                    color: Theme.of(context)
+                                                                        .colorScheme
+                                                                        .onSurface
+                                                                        .withOpacity(.2),
+                                                                  ),
+                                                                ),
+                                                              ],
+                                                            ),
+                                                            Padding(
+                                                              padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                                                              child: Text(
+                                                                'Você ainda não possui um endereço',
+                                                                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                                      color: Colors.black,
+                                                                      fontWeight: FontWeight.w700,
+                                                                    ),
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding: const EdgeInsets.symmetric(horizontal: 24),
+                                                              child: Text(
+                                                                'Para realizar um pedido, você precisa cadastrar um endereço de entrega.',
+                                                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                      color: Theme.of(context)
+                                                                          .colorScheme
+                                                                          .onSurface
+                                                                          .withOpacity(.5),
+                                                                      fontWeight: FontWeight.w500,
+                                                                    ),
+                                                                textAlign: TextAlign.start,
+                                                                maxLines: 4,
+                                                              ),
+                                                            ),
+                                                            Padding(
+                                                              padding: const EdgeInsets.fromLTRB(24, 32, 24, 12),
+                                                              child: Row(
+                                                                children: [
+                                                                  Expanded(
+                                                                    child: FilledButton(
+                                                                      onPressed: () {
+                                                                        context.pop();
+                                                                        context.push(
+                                                                          '${AppRoutes.seller}/${user.id}',
+                                                                        );
+                                                                      },
+                                                                      style: FilledButton.styleFrom(
+                                                                        backgroundColor:
+                                                                            Theme.of(context).colorScheme.primary,
+                                                                        shape: RoundedRectangleBorder(
+                                                                          borderRadius: BorderRadius.circular(12),
+                                                                        ),
+                                                                        padding:
+                                                                            const EdgeInsets.symmetric(vertical: 22),
+                                                                        elevation: 0,
+                                                                      ),
+                                                                      child: Text(
+                                                                        'Cadastrar endereço',
+                                                                        style: Theme.of(context)
+                                                                            .textTheme
+                                                                            .bodyLarge
+                                                                            ?.copyWith(
+                                                                              color: Theme.of(context)
+                                                                                  .colorScheme
+                                                                                  .onPrimary,
+                                                                              fontWeight: FontWeight.w500,
+                                                                            ),
+                                                                      ),
+                                                                    ),
+                                                                  ),
+                                                                ],
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      );
+                                                    },
+                                                  );
+                                                }
+                                              },
+                                              style: FilledButton.styleFrom(
+                                                backgroundColor: Theme.of(context).colorScheme.primary,
+                                                shape: RoundedRectangleBorder(
+                                                  borderRadius: BorderRadius.circular(12),
+                                                ),
+                                                padding: const EdgeInsets.symmetric(vertical: 22),
+                                                elevation: 0,
+                                              ),
+                                              child: Text(
+                                                'Fazer pedido',
+                                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                      color: Theme.of(context).colorScheme.onPrimary,
+                                                      fontWeight: FontWeight.w500,
+                                                    ),
+                                              ),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
                           ),
                         ),
                       ],
@@ -630,15 +932,16 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              const AppSvgIconComponent(
+                                              AppSvgIconComponent(
                                                 assetName: AppIcons.deliveryBox,
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: Text(
                                                   'Meus pedidos',
                                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                                         fontWeight: FontWeight.w500,
                                                       ),
                                                 ),
@@ -646,7 +949,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                               const SizedBox(width: 12),
                                               AppSvgIconComponent(
                                                 assetName: AppIcons.arrowRight,
-                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.7),
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                               ),
                                             ],
                                           ),
@@ -684,7 +987,122 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                         ),
                                       ),
                                       InkWell(
-                                        onTap: () {},
+                                        onTap: () {
+                                          if (_bloc.userHasAddress) {
+                                            context.push(
+                                              AppRoutes.editAddress,
+                                              extra: {
+                                                'addressId': user.address.id,
+                                                'street': user.address.street,
+                                                'number': user.address.number,
+                                                'city': user.address.city,
+                                                'state': user.address.state,
+                                                'country': user.address.country,
+                                                'zipCode': user.address.zipCode,
+                                              },
+                                            );
+                                          } else {
+                                            showModalBottomSheet(
+                                              context: context,
+                                              backgroundColor: Theme.of(context).colorScheme.background,
+                                              shape: const RoundedRectangleBorder(
+                                                borderRadius: BorderRadius.only(
+                                                  topLeft: Radius.circular(24),
+                                                  topRight: Radius.circular(24),
+                                                ),
+                                              ),
+                                              useSafeArea: true,
+                                              builder: (context) {
+                                                return SafeArea(
+                                                  child: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                                                    mainAxisSize: MainAxisSize.min,
+                                                    children: [
+                                                      Row(
+                                                        mainAxisAlignment: MainAxisAlignment.center,
+                                                        children: [
+                                                          Container(
+                                                            margin: const EdgeInsets.symmetric(vertical: 16),
+                                                            height: 4,
+                                                            width: 64,
+                                                            decoration: BoxDecoration(
+                                                              borderRadius: BorderRadius.circular(2),
+                                                              color: Theme.of(context)
+                                                                  .colorScheme
+                                                                  .onSurface
+                                                                  .withOpacity(.2),
+                                                            ),
+                                                          ),
+                                                        ],
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.fromLTRB(24, 12, 24, 12),
+                                                        child: Text(
+                                                          'Você ainda não possui um endereço',
+                                                          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                                                color: Colors.black,
+                                                                fontWeight: FontWeight.w700,
+                                                              ),
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.symmetric(horizontal: 24),
+                                                        child: Text(
+                                                          'Para realizar um pedido, você precisa cadastrar um endereço de entrega.',
+                                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                                color: Theme.of(context)
+                                                                    .colorScheme
+                                                                    .onSurface
+                                                                    .withOpacity(.5),
+                                                                fontWeight: FontWeight.w500,
+                                                              ),
+                                                          textAlign: TextAlign.start,
+                                                          maxLines: 4,
+                                                        ),
+                                                      ),
+                                                      Padding(
+                                                        padding: const EdgeInsets.fromLTRB(24, 32, 24, 12),
+                                                        child: Row(
+                                                          children: [
+                                                            Expanded(
+                                                              child: FilledButton(
+                                                                onPressed: () {
+                                                                  context.pop();
+                                                                  context.push(
+                                                                    '${AppRoutes.seller}/${user.id}',
+                                                                  );
+                                                                },
+                                                                style: FilledButton.styleFrom(
+                                                                  backgroundColor:
+                                                                      Theme.of(context).colorScheme.primary,
+                                                                  shape: RoundedRectangleBorder(
+                                                                    borderRadius: BorderRadius.circular(12),
+                                                                  ),
+                                                                  padding: const EdgeInsets.symmetric(vertical: 22),
+                                                                  elevation: 0,
+                                                                ),
+                                                                child: Text(
+                                                                  'Cadastrar endereço',
+                                                                  style: Theme.of(context)
+                                                                      .textTheme
+                                                                      .bodyLarge
+                                                                      ?.copyWith(
+                                                                        color: Theme.of(context).colorScheme.onPrimary,
+                                                                        fontWeight: FontWeight.w500,
+                                                                      ),
+                                                                ),
+                                                              ),
+                                                            ),
+                                                          ],
+                                                        ),
+                                                      ),
+                                                    ],
+                                                  ),
+                                                );
+                                              },
+                                            );
+                                          }
+                                        },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(

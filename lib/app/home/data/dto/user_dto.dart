@@ -1,5 +1,6 @@
 import '../../../../core/errors/errors.dart';
 import '../../domain/entities/entities.dart';
+import 'dto.dart';
 
 class UserDto {
   final String id;
@@ -10,6 +11,7 @@ class UserDto {
   final String displayName;
   final String cpf;
   final String cnpj;
+  final AddressDto address;
 
   UserDto({
     required this.id,
@@ -20,6 +22,7 @@ class UserDto {
     required this.displayName,
     required this.cpf,
     required this.cnpj,
+    required this.address,
   });
 
   factory UserDto.fromMap(Map<String, dynamic> map) {
@@ -33,6 +36,7 @@ class UserDto {
         displayName: map['display_name'] != null ? map['display_name'] as String : '',
         cpf: map['cpf'] != null ? map['cpf'] as String : '',
         cnpj: map['cnpj'] != null ? map['cnpj'] as String : '',
+        address: map['address'] != null ? AddressDto.fromMap(map['address']) : AddressDto.empty(),
       );
     } catch (e) {
       throw DtoFailure(message: 'Error parsing user from map');
@@ -49,6 +53,7 @@ class UserDto {
       displayName: displayName,
       cpf: cpf,
       cnpj: cnpj,
+      address: address.toEntity(),
     );
   }
 }

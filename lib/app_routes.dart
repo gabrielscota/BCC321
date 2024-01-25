@@ -3,7 +3,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'app/add_address/add_address.dart';
 import 'app/add_product/add_product.dart';
+import 'app/edit_address/edit_address.dart';
 import 'app/edit_product/edit_product.dart';
 import 'app/favorites/favorites.dart';
 import 'app/home/home.dart';
@@ -13,12 +15,15 @@ import 'app/seller/seller.dart';
 import 'app/seller_create/seller_create.dart';
 import 'app/seller_products/seller_products.dart';
 import 'app/shop/shop.dart';
+import 'app/shop_information/shop_information.dart';
 import 'app/sign_in/sign_in.dart';
 import 'app/sign_up/sign_up.dart';
 import 'app/splash/splash.dart';
 
 class AppRoutes {
+  static const String addAddress = '/add-address';
   static const String addProduct = '/add-product';
+  static const String editAddress = '/edit-address';
   static const String editProduct = '/edit-product';
   static const String favorites = '/favorites';
   static const String home = '/home';
@@ -28,6 +33,7 @@ class AppRoutes {
   static const String sellerCreate = '/seller/create';
   static const String sellerProducts = '/seller/products';
   static const String shop = '/shop';
+  static const String shopInformation = '/shop-information';
   static const String signIn = '/sign-in';
   static const String signUp = '/sign-up';
   static const String splash = '/';
@@ -42,6 +48,27 @@ class AppRoutes {
     observers: [routeObserver],
     routes: [
       GoRoute(
+        path: '${AppRoutes.addAddress}/:userId',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => AddAddressBloc(
+              addAddressUseCase: AddAddressUseCase(
+                repository: SupabaseAddAddressRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: AddAddressPage(userId: state.pathParameters['userId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
         path: '${AppRoutes.addProduct}/:sellerId',
         pageBuilder: (context, state) => CustomTransitionPage(
           transitionDuration: const Duration(milliseconds: 100),
@@ -53,6 +80,27 @@ class AppRoutes {
               ),
             ),
             child: AddProductPage(sellerId: state.pathParameters['sellerId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.editAddress,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => EditAddressBloc(
+              editAddressUseCase: EditAddressUseCase(
+                repository: SupabaseEditAddressRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: EditAddressPage(product: state.extra as Map),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,
@@ -127,6 +175,9 @@ class AppRoutes {
                 ),
                 verifyIfUserIsSellerUseCase: VerifyIfUserIsSellerUseCase(
                   repository: SupabaseUserDetailsRepository(client: supabaseClient),
+                ),
+                newOrderUseCase: NewOrderUseCase(
+                  repository: SupabaseOrderRepository(client: supabaseClient),
                 ),
               );
             },
@@ -269,6 +320,27 @@ class AppRoutes {
               ),
             ),
             child: ShopPage(sellerId: state.pathParameters['sellerId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.shopInformation,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => ShopInformationBloc(
+              editShopInformationUseCase: EditShopInformationUseCase(
+                repository: SupabaseEditShopInformationRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: ShopInformationPage(shop: state.extra as Map),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,

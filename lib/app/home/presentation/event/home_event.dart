@@ -9,3 +9,11 @@ class HomeSignOutEvent extends HomeEvent {}
 class HomeLoadUserDetailsEvent extends HomeEvent {}
 
 class HomeVerifyIfUserIsSellerEvent extends HomeEvent {}
+
+class HomeNewOrderEvent extends HomeEvent {
+  final List<Map<String, dynamic>> items;
+  final String addressId;
+  final String userId;
+
+  HomeNewOrderEvent({required this.items, required this.addressId, required this.userId});
+}

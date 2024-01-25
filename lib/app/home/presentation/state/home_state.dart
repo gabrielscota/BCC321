@@ -6,6 +6,8 @@ class HomeInitialState extends HomeState {}
 
 class HomePageLoadingState extends HomeState {}
 
+class HomePageDialogLoadingState extends HomeState {}
+
 class HomePageLoadedState extends HomeState {
   final UserEntity user;
   final List<CategoryEntity> categories;
@@ -27,3 +29,5 @@ class HomePageErrorState extends HomeState {
 }
 
 class HomePageSignOutState extends HomeState {}
+
+class HomePageNewOrderSuccessState extends HomeState {}

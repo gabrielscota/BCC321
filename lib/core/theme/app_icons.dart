@@ -9,6 +9,7 @@ class AppIcons {
   static const String deliveryBox = 'assets/icons/delivery-box.svg';
   static const String deliveryBoxes = 'assets/icons/delivery-boxes.svg';
   static const String discountTicket = 'assets/icons/discount-ticket.svg';
+  static const String documentBadge = 'assets/icons/document-badge.svg';
   static const String edit = 'assets/icons/edit.svg';
   static const String eye = 'assets/icons/eye.svg';
   static const String eyeOff = 'assets/icons/eye-off.svg';

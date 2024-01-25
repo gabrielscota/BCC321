@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 
+import '../../../../core/shopping_cart/shopping_cart.dart';
 import '../../domain/entities/entities.dart';
 import '../../domain/usecases/usecases.dart';
 
@@ -14,6 +16,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchProductListUseCase fetchProductListUseCase;
   final UserSignOutUseCase userSignOutUseCase;
   final VerifyIfUserIsSellerUseCase verifyIfUserIsSellerUseCase;
+  final NewOrderUseCase newOrderUseCase;
 
   HomeBloc({
     required this.fetchUserDetailsUseCase,
@@ -21,19 +24,27 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required this.fetchCategoryListUseCase,
     required this.userSignOutUseCase,
     required this.verifyIfUserIsSellerUseCase,
+    required this.newOrderUseCase,
   }) : super(HomeInitialState()) {
     on<HomeStartedEvent>(_load);
     on<HomeSignOutEvent>(_signOut);
     on<HomeLoadUserDetailsEvent>(_loadUserDetails);
     on<HomeVerifyIfUserIsSellerEvent>(_verifyIfUserIsSeller);
+    on<HomeNewOrderEvent>(_newOrder);
   }
 
+  late UserEntity _user;
   late List<CategoryEntity> _categories;
   late List<ProductEntity> _products;
+
+  late bool _userHasAddress;
+  bool get userHasAddress => _userHasAddress;
 
   FutureOr<void> _load(HomeEvent event, Emitter<HomeState> emit) async {
     if (event is HomeStartedEvent) {
       emit(HomePageLoadingState());
+
+      _userHasAddress = false;
 
       final userDetailsResult = await fetchUserDetailsUseCase.call();
       final categoryResult = await fetchCategoryListUseCase.call();
@@ -42,8 +53,11 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (userDetailsResult.isLeft && categoryResult.isLeft && productResult.isLeft) {
         return emit(HomePageErrorState(message: categoryResult.left.message));
       } else if (userDetailsResult.isRight && categoryResult.isRight && productResult.isRight) {
+        _user = userDetailsResult.right;
         _categories = categoryResult.right;
         _products = productResult.right;
+
+        _userHasAddress = userDetailsResult.right.address.id.isNotEmpty;
 
         return emit(
           HomePageLoadedState(
@@ -93,6 +107,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         } else if (result.isRight) {
           _userIsSeller = result.right;
         }
+      }
+    }
+  }
+
+  FutureOr<void> _newOrder(HomeEvent event, Emitter<HomeState> emit) async {
+    if (event is HomeNewOrderEvent) {
+      emit(HomePageDialogLoadingState());
+
+      final result = await newOrderUseCase.call(
+        params: NewOrderUseCaseParams(
+          items: event.items,
+          addressId: event.addressId,
+          userId: event.userId,
+        ),
+      );
+
+      if (result.isLeft) {
+        return emit(HomePageErrorState(message: result.left.message));
+      } else if (result.isRight) {
+        final cartBloc = GetIt.I.get<CartBloc>();
+        cartBloc.add(CartClearEvent());
+
+        emit(HomePageNewOrderSuccessState());
+        return emit(
+          HomePageLoadedState(
+            user: _user,
+            categories: _categories,
+            products: _products,
+          ),
+        );
       }
     }
   }

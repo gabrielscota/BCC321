@@ -1,3 +1,5 @@
+import 'entities.dart';
+
 class UserEntity {
   final String id;
   final String name;
@@ -7,6 +9,7 @@ class UserEntity {
   final String displayName;
   final String cpf;
   final String cnpj;
+  final AddressEntity address;
 
   UserEntity({
     required this.id,
@@ -17,5 +20,6 @@ class UserEntity {
     required this.displayName,
     required this.cpf,
     required this.cnpj,
+    required this.address,
   });
 }

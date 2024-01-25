@@ -325,7 +325,7 @@ class _EditProductPageState extends State<EditProductPage> {
                           elevation: 0,
                         ),
                         child: Text(
-                          'Atualizar',
+                          'Salvar',
                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                 color: Theme.of(context).colorScheme.onPrimary,
                                 fontWeight: FontWeight.w500,

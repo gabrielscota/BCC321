@@ -2,9 +2,11 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:get_it/get_it.dart';
 import 'package:go_router/go_router.dart';
 import 'package:sliver_tools/sliver_tools.dart';
 
+import '../../../../core/shopping_cart/shopping_cart.dart';
 import '../../../../core/theme/theme.dart';
 import '../../../../shared/utils/utils.dart';
 import '../../../../shared/widgets/widgets.dart';
@@ -290,7 +292,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 TextSpan(
                                                   children: [
                                                     const TextSpan(
-                                                      text: '4.6',
+                                                      text: '0.0',
                                                     ),
                                                     TextSpan(
                                                       text: ' /5',
@@ -309,7 +311,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                             ],
                                           ),
                                           Text(
-                                            'Baseado em 100 avaliações',
+                                            'Baseado em 0 avaliações',
                                             style: Theme.of(context).textTheme.bodySmall?.copyWith(
                                                   color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
                                                   fontWeight: FontWeight.w400,
@@ -347,7 +349,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 height: 8,
                                                 width: 64,
                                                 child: LinearProgressIndicator(
-                                                  value: .8,
+                                                  value: 0,
                                                   borderRadius: BorderRadius.circular(10),
                                                   backgroundColor:
                                                       Theme.of(context).colorScheme.onSurface.withOpacity(.1),
@@ -372,7 +374,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 height: 8,
                                                 width: 64,
                                                 child: LinearProgressIndicator(
-                                                  value: .8,
+                                                  value: 0,
                                                   borderRadius: BorderRadius.circular(10),
                                                   backgroundColor:
                                                       Theme.of(context).colorScheme.onSurface.withOpacity(.1),
@@ -397,7 +399,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 height: 8,
                                                 width: 64,
                                                 child: LinearProgressIndicator(
-                                                  value: .8,
+                                                  value: 0,
                                                   borderRadius: BorderRadius.circular(10),
                                                   backgroundColor:
                                                       Theme.of(context).colorScheme.onSurface.withOpacity(.1),
@@ -422,7 +424,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 height: 8,
                                                 width: 64,
                                                 child: LinearProgressIndicator(
-                                                  value: .8,
+                                                  value: 0,
                                                   borderRadius: BorderRadius.circular(10),
                                                   backgroundColor:
                                                       Theme.of(context).colorScheme.onSurface.withOpacity(.1),
@@ -447,7 +449,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                                 height: 8,
                                                 width: 64,
                                                 child: LinearProgressIndicator(
-                                                  value: .8,
+                                                  value: 0,
                                                   borderRadius: BorderRadius.circular(10),
                                                   backgroundColor:
                                                       Theme.of(context).colorScheme.onSurface.withOpacity(.1),
@@ -526,6 +528,18 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   flex: 2,
                                   child: FilledButton(
                                     onPressed: () async {
+                                      final cartBloc = GetIt.instance.get<CartBloc>();
+                                      cartBloc.add(
+                                        CartAddEvent(
+                                          item: {
+                                            'id': state.product.id,
+                                            'name': state.product.name,
+                                            'price': state.product.price,
+                                            'quantity': 1,
+                                          },
+                                        ),
+                                      );
+
                                       ScaffoldMessenger.of(context).showSnackBar(
                                         SnackBar(
                                           duration: const Duration(seconds: 2),
