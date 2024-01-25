@@ -7,6 +7,7 @@ import 'app/add_product/add_product.dart';
 import 'app/edit_product/edit_product.dart';
 import 'app/favorites/favorites.dart';
 import 'app/home/home.dart';
+import 'app/personal_information/personal_information.dart';
 import 'app/product_details/product_details.dart';
 import 'app/seller/seller.dart';
 import 'app/seller_create/seller_create.dart';
@@ -21,6 +22,7 @@ class AppRoutes {
   static const String editProduct = '/edit-product';
   static const String favorites = '/favorites';
   static const String home = '/home';
+  static const String personalInformation = '/personal-information';
   static const String product = '/product';
   static const String seller = '/seller';
   static const String sellerCreate = '/seller/create';
@@ -120,9 +122,6 @@ class AppRoutes {
                 fetchProductListUseCase: FetchProductListUseCase(
                   repository: SupabaseProductRepository(client: supabaseClient),
                 ),
-                fetchSellerListUseCase: FetchSellerListUseCase(
-                  repository: SupabaseSellerRepository(client: supabaseClient),
-                ),
                 userSignOutUseCase: UserSignOutUseCase(
                   repository: SupabaseUserSignOutRepository(client: supabaseClient),
                 ),
@@ -132,6 +131,27 @@ class AppRoutes {
               );
             },
             child: const HomePage(),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.personalInformation,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => PersonalInformationBloc(
+              editPersonalInformationUseCase: EditPersonalInformationUseCase(
+                repository: SupabaseEditPersonalInformationRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: PersonalInformationPage(product: state.extra as Map),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,

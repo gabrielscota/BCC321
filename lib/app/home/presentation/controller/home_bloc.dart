@@ -12,7 +12,6 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   final FetchUserDetailsUseCase fetchUserDetailsUseCase;
   final FetchCategoryListUseCase fetchCategoryListUseCase;
   final FetchProductListUseCase fetchProductListUseCase;
-  final FetchSellerListUseCase fetchSellerListUseCase;
   final UserSignOutUseCase userSignOutUseCase;
   final VerifyIfUserIsSellerUseCase verifyIfUserIsSellerUseCase;
 
@@ -20,14 +19,17 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     required this.fetchUserDetailsUseCase,
     required this.fetchProductListUseCase,
     required this.fetchCategoryListUseCase,
-    required this.fetchSellerListUseCase,
     required this.userSignOutUseCase,
     required this.verifyIfUserIsSellerUseCase,
   }) : super(HomeInitialState()) {
     on<HomeStartedEvent>(_load);
     on<HomeSignOutEvent>(_signOut);
+    on<HomeLoadUserDetailsEvent>(_loadUserDetails);
     on<HomeVerifyIfUserIsSellerEvent>(_verifyIfUserIsSeller);
   }
+
+  late List<CategoryEntity> _categories;
+  late List<ProductEntity> _products;
 
   FutureOr<void> _load(HomeEvent event, Emitter<HomeState> emit) async {
     if (event is HomeStartedEvent) {
@@ -36,17 +38,36 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       final userDetailsResult = await fetchUserDetailsUseCase.call();
       final categoryResult = await fetchCategoryListUseCase.call();
       final productResult = await fetchProductListUseCase.call();
-      final sellerResult = await fetchSellerListUseCase.call();
 
-      if (userDetailsResult.isLeft && categoryResult.isLeft && productResult.isLeft && sellerResult.isLeft) {
+      if (userDetailsResult.isLeft && categoryResult.isLeft && productResult.isLeft) {
         return emit(HomePageErrorState(message: categoryResult.left.message));
-      } else if (userDetailsResult.isRight && categoryResult.isRight && productResult.isRight && sellerResult.isRight) {
+      } else if (userDetailsResult.isRight && categoryResult.isRight && productResult.isRight) {
+        _categories = categoryResult.right;
+        _products = productResult.right;
+
         return emit(
           HomePageLoadedState(
             user: userDetailsResult.right,
             categories: categoryResult.right,
             products: productResult.right,
-            sellers: sellerResult.right,
+          ),
+        );
+      }
+    }
+  }
+
+  FutureOr<void> _loadUserDetails(HomeEvent event, Emitter<HomeState> emit) async {
+    if (event is HomeLoadUserDetailsEvent) {
+      final userDetailsResult = await fetchUserDetailsUseCase.call();
+
+      if (userDetailsResult.isLeft) {
+        return emit(HomePageErrorState(message: userDetailsResult.left.message));
+      } else if (userDetailsResult.isRight) {
+        return emit(
+          HomePageLoadedState(
+            user: userDetailsResult.right,
+            categories: _categories,
+            products: _products,
           ),
         );
       }

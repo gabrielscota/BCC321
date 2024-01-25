@@ -1,0 +1,1 @@
+export 'supabase_edit_personal_information_repository.dart';

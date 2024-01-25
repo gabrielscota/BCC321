@@ -66,7 +66,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
 
     _pageController.jumpToPage(_currentPageViewIndex);
 
-    // _bloc.add(HomeStartedEvent());
+    _bloc.add(HomeLoadUserDetailsEvent());
     _bloc.add(HomeVerifyIfUserIsSellerEvent());
   }
 
@@ -582,7 +582,20 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                       ),
                                       const SizedBox(height: 12),
                                       InkWell(
-                                        onTap: () {},
+                                        onTap: () {
+                                          context.push(
+                                            AppRoutes.personalInformation,
+                                            extra: {
+                                              'userId': user.id,
+                                              'isPhysicalPerson': user.cpf.isNotEmpty,
+                                              'name': user.name,
+                                              'email': user.email,
+                                              'cpf': user.cpf,
+                                              'cnpj': user.cnpj,
+                                              'phone': user.phone,
+                                            },
+                                          );
+                                        },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
