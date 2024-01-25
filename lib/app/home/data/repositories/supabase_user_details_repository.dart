@@ -32,7 +32,8 @@ class SupabaseUserDetailsRepository implements UserDetailsRepository {
           }
         }
 
-        final addressResponse = await client.from('address').select().eq('id', response.first['address_id']).limit(1);
+        final addressResponse =
+            await client.from('address').select().eq('id', response.first['address_id'] ?? 0).limit(1);
         response.first['address'] = AddressDto.empty().toMap();
         if (addressResponse.isNotEmpty) {
           response.first['address'] = AddressDto.fromMap(addressResponse.first).toMap();

@@ -221,7 +221,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            '4.6',
+                                            '0.0',
                                             style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                                   color: Theme.of(context).colorScheme.onBackground,
                                                   fontWeight: FontWeight.w700,
@@ -229,7 +229,7 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           ),
                                           const SizedBox(width: 4),
                                           Text(
-                                            '(120 avaliações)',
+                                            '(0 avaliações)',
                                             style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                                   color: Theme.of(context).colorScheme.onBackground.withOpacity(.4),
                                                   fontWeight: FontWeight.w600,

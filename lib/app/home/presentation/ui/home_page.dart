@@ -78,11 +78,11 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
     });
   }
 
-  void _changeCategory(int index) {
-    // TODO: Aplicar filtro de categoria na lista de produtos
+  void _changeCategory(int index, String categoryId) {
     setState(() {
       _currentCategoryIndex = index;
     });
+    _bloc.add(HomeLoadProductListEvent(categoryId: categoryId));
   }
 
   @override
@@ -253,10 +253,10 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                               ),
                                             ),
                                           ),
-                                          AppSvgIconComponent(
-                                            assetName: AppIcons.filter,
-                                            color: Theme.of(context).colorScheme.onSurface,
-                                          ),
+                                          // AppSvgIconComponent(
+                                          //   assetName: AppIcons.filter,
+                                          //   color: Theme.of(context).colorScheme.onSurface,
+                                          // ),
                                         ],
                                       ),
                                     ),
@@ -290,7 +290,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                             itemBuilder: (context, index) {
                                               if (index == 0) {
                                                 return InkWell(
-                                                  onTap: () => _changeCategory(index),
+                                                  onTap: () => _changeCategory(index, ''),
                                                   splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                                   highlightColor:
                                                       Theme.of(context).colorScheme.primary.withOpacity(0.1),
@@ -327,7 +327,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                               }
 
                                               return InkWell(
-                                                onTap: () => _changeCategory(index),
+                                                onTap: () => _changeCategory(index, categories[index - 1].id),
                                                 splashColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                                 highlightColor: Theme.of(context).colorScheme.primary.withOpacity(0.1),
                                                 borderRadius: BorderRadius.circular(32),

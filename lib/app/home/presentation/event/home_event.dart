@@ -17,3 +17,9 @@ class HomeNewOrderEvent extends HomeEvent {
 
   HomeNewOrderEvent({required this.items, required this.addressId, required this.userId});
 }
+
+class HomeLoadProductListEvent extends HomeEvent {
+  final String categoryId;
+
+  HomeLoadProductListEvent({required this.categoryId});
+}

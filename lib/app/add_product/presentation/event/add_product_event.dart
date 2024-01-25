@@ -2,6 +2,8 @@ part of '../controller/add_product_bloc.dart';
 
 abstract class AddProductEvent {}
 
+class AddProductLoadCategoriesEvent extends AddProductEvent {}
+
 class AddProductStartedEvent extends AddProductEvent {
   final String name;
   final String description;

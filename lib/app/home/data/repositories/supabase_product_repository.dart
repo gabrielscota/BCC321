@@ -11,14 +11,25 @@ class SupabaseProductRepository implements ProductRepository {
   SupabaseProductRepository({required this.client});
 
   @override
-  Future<List<ProductEntity>> fetchProductList() async {
+  Future<List<ProductEntity>> fetchProductList({required String categoryId}) async {
     try {
-      final response = await client.from('product').select().order('created_at', ascending: false);
-      if (response.isNotEmpty) {
-        final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
-        return products;
+      if (categoryId.isEmpty) {
+        final response = await client.from('product').select().order('created_at', ascending: false);
+        if (response.isNotEmpty) {
+          final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
+          return products;
+        } else {
+          return [];
+        }
       } else {
-        return [];
+        final response =
+            await client.from('product').select().eq('category_id', categoryId).order('created_at', ascending: false);
+        if (response.isNotEmpty) {
+          final products = response.map((e) => ProductDto.fromMap(e).toEntity()).toList();
+          return products;
+        } else {
+          return [];
+        }
       }
     } on DtoFailure catch (_) {
       rethrow;

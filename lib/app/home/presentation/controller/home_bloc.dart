@@ -31,6 +31,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     on<HomeLoadUserDetailsEvent>(_loadUserDetails);
     on<HomeVerifyIfUserIsSellerEvent>(_verifyIfUserIsSeller);
     on<HomeNewOrderEvent>(_newOrder);
+    on<HomeLoadProductListEvent>(_loadProductList);
   }
 
   late UserEntity _user;
@@ -135,6 +136,26 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             user: _user,
             categories: _categories,
             products: _products,
+          ),
+        );
+      }
+    }
+  }
+
+  FutureOr<void> _loadProductList(HomeEvent event, Emitter<HomeState> emit) async {
+    if (event is HomeLoadProductListEvent) {
+      final productResult = await fetchProductListUseCase.call(categoryId: event.categoryId);
+
+      if (productResult.isLeft) {
+        return emit(HomePageErrorState(message: productResult.left.message));
+      } else if (productResult.isRight) {
+        _products = productResult.right;
+
+        return emit(
+          HomePageLoadedState(
+            user: _user,
+            categories: _categories,
+            products: productResult.right,
           ),
         );
       }

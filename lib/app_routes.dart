@@ -78,6 +78,9 @@ class AppRoutes {
               addProductUseCase: AddProductUseCase(
                 repository: SupabaseAddProductRepository(client: Supabase.instance.client),
               ),
+              fetchCategoryListUseCase: AddProductFetchCategoryListUseCase(
+                repository: SupabaseAddProductCategoryRepository(client: Supabase.instance.client),
+              ),
             ),
             child: AddProductPage(sellerId: state.pathParameters['sellerId']!),
           ),
