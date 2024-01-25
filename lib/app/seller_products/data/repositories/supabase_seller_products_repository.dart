@@ -23,6 +23,12 @@ class SupabaseSellerProductsRepository implements SellerProductsRepository {
       }
     } on DtoFailure catch (_) {
       rethrow;
+    } on PostgrestException catch (e) {
+      if (e.code == '23503') {
+        throw ApiFailure(message: 'Esse produto está em um pedido, não é possível excluí-lo');
+      } else {
+        throw ApiFailure(message: e.message);
+      }
     } catch (e) {
       throw ApiFailure(message: e.toString());
     }

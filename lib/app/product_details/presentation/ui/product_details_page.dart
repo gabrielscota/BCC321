@@ -476,116 +476,119 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                     ),
                   ],
                 ),
-                SafeArea(
-                  top: false,
-                  child: Padding(
-                    padding: const EdgeInsets.only(bottom: 24),
-                    child: Align(
-                      alignment: Alignment.bottomCenter,
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(16),
-                        child: BackdropFilter(
-                          filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
-                          child: Container(
-                            height: 72,
-                            margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
-                            child: Row(
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Expanded(
-                                  flex: 3,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      color: Theme.of(context).colorScheme.primary.withOpacity(.8),
-                                      borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
-                                    ),
-                                    padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-                                    child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
-                                      mainAxisSize: MainAxisSize.min,
-                                      mainAxisAlignment: MainAxisAlignment.center,
-                                      children: [
-                                        Text(
-                                          CurrencyFormat.formatCentsToReal(state.product.price),
-                                          style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                color: Theme.of(context).colorScheme.onPrimary,
-                                                fontWeight: FontWeight.w700,
-                                              ),
-                                          textAlign: TextAlign.start,
-                                        ),
-                                        Text(
-                                          'Preço por unidade',
-                                          style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                                                color: Theme.of(context).colorScheme.onPrimary.withOpacity(.6),
-                                                fontWeight: FontWeight.w400,
-                                              ),
-                                          textAlign: TextAlign.start,
-                                          maxLines: 1,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                ),
-                                Expanded(
-                                  flex: 2,
-                                  child: FilledButton(
-                                    onPressed: () async {
-                                      final cartBloc = GetIt.instance.get<CartBloc>();
-                                      cartBloc.add(
-                                        CartAddEvent(
-                                          item: {
-                                            'id': state.product.id,
-                                            'name': state.product.name,
-                                            'price': state.product.price,
-                                            'quantity': 1,
-                                          },
-                                        ),
-                                      );
-
-                                      ScaffoldMessenger.of(context).showSnackBar(
-                                        SnackBar(
-                                          duration: const Duration(seconds: 2),
-                                          content: Row(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
-                                            children: [
-                                              AppSvgIconComponent(
-                                                assetName: AppIcons.shoppingCart,
-                                                size: 28,
-                                                color: Theme.of(context).colorScheme.surface,
-                                              ),
-                                              const SizedBox(width: 12),
-                                              Text(
-                                                'Produto adicionado ao carrinho',
-                                                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                      color: Theme.of(context).colorScheme.surface,
-                                                    ),
-                                              ),
-                                            ],
-                                          ),
-                                          backgroundColor: Theme.of(context).colorScheme.onSurface,
-                                          padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
-                                        ),
-                                      );
-                                    },
-                                    style: FilledButton.styleFrom(
-                                      backgroundColor: Theme.of(context).colorScheme.primary,
-                                      shape: const RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.horizontal(right: Radius.circular(16)),
+                Visibility(
+                  visible: state.product.stockQuantity > 0,
+                  child: SafeArea(
+                    top: false,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 24),
+                      child: Align(
+                        alignment: Alignment.bottomCenter,
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: BackdropFilter(
+                            filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
+                            child: Container(
+                              height: 72,
+                              margin: const EdgeInsets.fromLTRB(24, 0, 24, 0),
+                              child: Row(
+                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                children: [
+                                  Expanded(
+                                    flex: 3,
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        color: Theme.of(context).colorScheme.primary.withOpacity(.8),
+                                        borderRadius: const BorderRadius.horizontal(left: Radius.circular(16)),
                                       ),
-                                      elevation: 0,
-                                      padding: EdgeInsets.zero,
-                                    ),
-                                    child: Text(
-                                      'Comprar',
-                                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                            color: Theme.of(context).colorScheme.onPrimary,
-                                            fontWeight: FontWeight.w700,
+                                      padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        mainAxisSize: MainAxisSize.min,
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            CurrencyFormat.formatCentsToReal(state.product.price),
+                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onPrimary,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                            textAlign: TextAlign.start,
                                           ),
-                                      textAlign: TextAlign.center,
+                                          Text(
+                                            'Preço por unidade',
+                                            style: Theme.of(context).textTheme.bodySmall?.copyWith(
+                                                  color: Theme.of(context).colorScheme.onPrimary.withOpacity(.6),
+                                                  fontWeight: FontWeight.w400,
+                                                ),
+                                            textAlign: TextAlign.start,
+                                            maxLines: 1,
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ),
-                                ),
-                              ],
+                                  Expanded(
+                                    flex: 2,
+                                    child: FilledButton(
+                                      onPressed: () async {
+                                        final cartBloc = GetIt.instance.get<CartBloc>();
+                                        cartBloc.add(
+                                          CartAddEvent(
+                                            item: {
+                                              'id': state.product.id,
+                                              'name': state.product.name,
+                                              'price': state.product.price,
+                                              'quantity': 1,
+                                            },
+                                          ),
+                                        );
+
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            duration: const Duration(seconds: 2),
+                                            content: Row(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                AppSvgIconComponent(
+                                                  assetName: AppIcons.shoppingCart,
+                                                  size: 28,
+                                                  color: Theme.of(context).colorScheme.surface,
+                                                ),
+                                                const SizedBox(width: 12),
+                                                Text(
+                                                  'Produto adicionado ao carrinho',
+                                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                        color: Theme.of(context).colorScheme.surface,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                            backgroundColor: Theme.of(context).colorScheme.onSurface,
+                                            padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+                                          ),
+                                        );
+                                      },
+                                      style: FilledButton.styleFrom(
+                                        backgroundColor: Theme.of(context).colorScheme.primary,
+                                        shape: const RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.horizontal(right: Radius.circular(16)),
+                                        ),
+                                        elevation: 0,
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                      child: Text(
+                                        'Comprar',
+                                        style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                              color: Theme.of(context).colorScheme.onPrimary,
+                                              fontWeight: FontWeight.w700,
+                                            ),
+                                        textAlign: TextAlign.center,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
                         ),

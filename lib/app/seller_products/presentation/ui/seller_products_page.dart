@@ -82,6 +82,31 @@ class _SellerProductsPageState extends State<SellerProductsPage> with RouteAware
                 padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
               ),
             );
+          } else if (state is SellerProductsPageErrorState) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                duration: const Duration(seconds: 2),
+                content: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    AppSvgIconComponent(
+                      assetName: AppIcons.delete,
+                      size: 28,
+                      color: Theme.of(context).colorScheme.surface,
+                    ),
+                    const SizedBox(width: 12),
+                    Text(
+                      'Erro ao excluir produto!',
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                            color: Theme.of(context).colorScheme.surface,
+                          ),
+                    ),
+                  ],
+                ),
+                backgroundColor: Theme.of(context).colorScheme.error,
+                padding: const EdgeInsets.fromLTRB(32, 24, 32, 48),
+              ),
+            );
           }
         },
         builder: (context, state) {
@@ -399,30 +424,6 @@ class _SellerProductsPageState extends State<SellerProductsPage> with RouteAware
                       ),
                     ],
                   ),
-                ),
-              ],
-            );
-          } else if (state is SellerProductsPageErrorState) {
-            return Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Seller Products Page Error',
-                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                        color: Theme.of(context).colorScheme.error,
-                        fontWeight: FontWeight.w500,
-                      ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  state.message,
-                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                        color: Theme.of(context).colorScheme.onSurface,
-                        fontWeight: FontWeight.w500,
-                      ),
-                  textAlign: TextAlign.center,
                 ),
               ],
             );
