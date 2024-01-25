@@ -177,7 +177,6 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                   ),
                                   const SizedBox(height: 12),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
                                       Visibility(
                                         visible: state.product.stockQuantity > 0,
@@ -213,29 +212,32 @@ class _ProductDetailsPageState extends State<ProductDetailsPage> {
                                           ),
                                         ),
                                       ),
-                                      Row(
-                                        crossAxisAlignment: CrossAxisAlignment.center,
-                                        children: [
-                                          const AppSvgIconComponent(
-                                            assetName: AppIcons.star,
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '0.0',
-                                            style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                  color: Theme.of(context).colorScheme.onBackground,
-                                                  fontWeight: FontWeight.w700,
-                                                ),
-                                          ),
-                                          const SizedBox(width: 4),
-                                          Text(
-                                            '(0 avaliações)',
-                                            style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                  color: Theme.of(context).colorScheme.onBackground.withOpacity(.4),
-                                                  fontWeight: FontWeight.w600,
-                                                ),
-                                          ),
-                                        ],
+                                      Expanded(
+                                        child: Row(
+                                          mainAxisAlignment: MainAxisAlignment.end,
+                                          crossAxisAlignment: CrossAxisAlignment.center,
+                                          children: [
+                                            const AppSvgIconComponent(
+                                              assetName: AppIcons.star,
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '0.0',
+                                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                    color: Theme.of(context).colorScheme.onBackground,
+                                                    fontWeight: FontWeight.w700,
+                                                  ),
+                                            ),
+                                            const SizedBox(width: 4),
+                                            Text(
+                                              '(0 avaliações)',
+                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                    color: Theme.of(context).colorScheme.onBackground.withOpacity(.4),
+                                                    fontWeight: FontWeight.w600,
+                                                  ),
+                                            ),
+                                          ],
+                                        ),
                                       ),
                                     ],
                                   ),

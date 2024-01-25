@@ -78,6 +78,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
       if (userDetailsResult.isLeft) {
         return emit(HomePageErrorState(message: userDetailsResult.left.message));
       } else if (userDetailsResult.isRight) {
+        _userHasAddress = userDetailsResult.right.address.id.isNotEmpty;
+
         return emit(
           HomePageLoadedState(
             user: userDetailsResult.right,

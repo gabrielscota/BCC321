@@ -4,14 +4,18 @@ import 'package:go_router/go_router.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app/add_address/add_address.dart';
+import 'app/add_coupon/add_coupon.dart';
 import 'app/add_product/add_product.dart';
 import 'app/edit_address/edit_address.dart';
+import 'app/edit_coupon/edit_coupon.dart';
 import 'app/edit_product/edit_product.dart';
 import 'app/favorites/favorites.dart';
 import 'app/home/home.dart';
+import 'app/orders/orders.dart';
 import 'app/personal_information/personal_information.dart';
 import 'app/product_details/product_details.dart';
 import 'app/seller/seller.dart';
+import 'app/seller_coupons/seller_coupons.dart';
 import 'app/seller_create/seller_create.dart';
 import 'app/seller_products/seller_products.dart';
 import 'app/shop/shop.dart';
@@ -22,14 +26,18 @@ import 'app/splash/splash.dart';
 
 class AppRoutes {
   static const String addAddress = '/add-address';
+  static const String addCoupon = '/add-coupon';
   static const String addProduct = '/add-product';
   static const String editAddress = '/edit-address';
+  static const String editCoupon = '/edit-coupon';
   static const String editProduct = '/edit-product';
   static const String favorites = '/favorites';
   static const String home = '/home';
+  static const String orders = '/orders';
   static const String personalInformation = '/personal-information';
   static const String product = '/product';
   static const String seller = '/seller';
+  static const String sellerCoupons = '/seller/coupons';
   static const String sellerCreate = '/seller/create';
   static const String sellerProducts = '/seller/products';
   static const String shop = '/shop';
@@ -59,6 +67,27 @@ class AppRoutes {
               ),
             ),
             child: AddAddressPage(userId: state.pathParameters['userId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '${AppRoutes.addCoupon}/:sellerId',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => AddCouponBloc(
+              addCouponUseCase: AddCouponUseCase(
+                repository: SupabaseAddCouponRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: AddCouponPage(sellerId: state.pathParameters['sellerId']!),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,
@@ -104,6 +133,27 @@ class AppRoutes {
               ),
             ),
             child: EditAddressPage(product: state.extra as Map),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: AppRoutes.editCoupon,
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => EditCouponBloc(
+              editCouponUseCase: EditCouponUseCase(
+                repository: SupabaseEditCouponRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: EditCouponPage(coupon: state.extra as Map),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,
@@ -195,6 +245,27 @@ class AppRoutes {
         ),
       ),
       GoRoute(
+        path: '${AppRoutes.orders}/:userId',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => OrdersBloc(
+              fetchOrderListUseCase: FetchOrderListUseCase(
+                repository: SupabaseOrdersRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: OrdersPage(userId: state.pathParameters['userId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
         path: AppRoutes.personalInformation,
         pageBuilder: (context, state) => CustomTransitionPage(
           transitionDuration: const Duration(milliseconds: 100),
@@ -254,6 +325,30 @@ class AppRoutes {
               ),
             ),
             child: SellerPage(sellerId: state.pathParameters['sellerId']!),
+          ),
+          transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
+            primaryRouteAnimation: animation,
+            secondaryRouteAnimation: secondaryAnimation,
+            linearTransition: true,
+            child: child,
+          ),
+        ),
+      ),
+      GoRoute(
+        path: '${AppRoutes.sellerCoupons}/:sellerId',
+        pageBuilder: (context, state) => CustomTransitionPage(
+          transitionDuration: const Duration(milliseconds: 100),
+          reverseTransitionDuration: const Duration(milliseconds: 100),
+          child: BlocProvider(
+            create: (context) => SellerCouponsBloc(
+              fetchSellerProductListUseCase: FetchSellerCouponsListUseCase(
+                repository: SupabaseSellerCouponsRepository(client: Supabase.instance.client),
+              ),
+              deleteCouponUseCase: DeleteCouponUseCase(
+                repository: SupabaseSellerCouponsRepository(client: Supabase.instance.client),
+              ),
+            ),
+            child: SellerCouponsPage(sellerId: state.pathParameters['sellerId']!),
           ),
           transitionsBuilder: (context, animation, secondaryAnimation, child) => CupertinoPageTransition(
             primaryRouteAnimation: animation,

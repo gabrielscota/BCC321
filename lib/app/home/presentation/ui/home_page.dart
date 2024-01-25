@@ -33,6 +33,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
   late int _currentCategoryIndex;
 
   late final TextEditingController _searchController;
+  late final TextEditingController _counponController;
 
   @override
   void initState() {
@@ -48,6 +49,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
     _currentCategoryIndex = 0;
 
     _searchController = TextEditingController();
+    _counponController = TextEditingController();
   }
 
   @override
@@ -240,19 +242,19 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                               },
                                             ),
                                           ),
-                                          Container(
-                                            width: 1,
-                                            height: 28,
-                                            margin: const EdgeInsets.symmetric(horizontal: 12),
-                                            decoration: BoxDecoration(
-                                              border: Border(
-                                                left: BorderSide(
-                                                  width: 1,
-                                                  color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
-                                                ),
-                                              ),
-                                            ),
-                                          ),
+                                          // Container(
+                                          //   width: 1,
+                                          //   height: 28,
+                                          //   margin: const EdgeInsets.symmetric(horizontal: 12),
+                                          //   decoration: BoxDecoration(
+                                          //     border: Border(
+                                          //       left: BorderSide(
+                                          //         width: 1,
+                                          //         color: Theme.of(context).colorScheme.onSurface.withOpacity(0.1),
+                                          //       ),
+                                          //     ),
+                                          //   ),
+                                          // ),
                                           // AppSvgIconComponent(
                                           //   assetName: AppIcons.filter,
                                           //   color: Theme.of(context).colorScheme.onSurface,
@@ -488,36 +490,6 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                     ),
                                   ),
                                   SliverVisibility(
-                                    visible: user.address.id.isNotEmpty,
-                                    sliver: SliverToBoxAdapter(
-                                      child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                        children: [
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
-                                            child: Text(
-                                              'Endereço de entrega',
-                                              style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                    color: Colors.black,
-                                                    fontWeight: FontWeight.w700,
-                                                  ),
-                                            ),
-                                          ),
-                                          Padding(
-                                            padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
-                                            child: Text(
-                                              '${user.address.street}, ${user.address.number}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}',
-                                              style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                                                    color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
-                                                    fontWeight: FontWeight.w400,
-                                                  ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  SliverVisibility(
                                     visible: state.items.isEmpty,
                                     sliver: SliverToBoxAdapter(
                                       child: Container(
@@ -548,6 +520,154 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                     visible: state.items.isNotEmpty,
                                     sliver: MultiSliver(
                                       children: [
+                                        SliverVisibility(
+                                          visible: user.address.id.isNotEmpty,
+                                          sliver: SliverToBoxAdapter(
+                                            child: Column(
+                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              children: [
+                                                Padding(
+                                                  padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                                                  child: Text(
+                                                    'Endereço de entrega',
+                                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                          color: Colors.black,
+                                                          fontWeight: FontWeight.w700,
+                                                        ),
+                                                  ),
+                                                ),
+                                                Padding(
+                                                  padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                                                  child: Text(
+                                                    '${user.address.street}, ${user.address.number}, ${user.address.city}, ${user.address.state} - ${user.address.zipCode}',
+                                                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                          color:
+                                                              Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                          fontWeight: FontWeight.w400,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                        SliverToBoxAdapter(
+                                          child: Column(
+                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                            children: [
+                                              Padding(
+                                                padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+                                                child: Text(
+                                                  'Informações do pedido',
+                                                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                        color: Colors.black,
+                                                        fontWeight: FontWeight.w700,
+                                                      ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.fromLTRB(24, 12, 24, 2),
+                                                child: Text(
+                                                  CurrencyFormat.formatCentsToReal(state.items.fold<int>(
+                                                      0,
+                                                      (previousValue, element) =>
+                                                          previousValue +
+                                                          (element['price'] as int) * (element['quantity'] as int))),
+                                                  style: Theme.of(context).textTheme.headlineSmall?.copyWith(
+                                                        color: Theme.of(context).colorScheme.onSurface,
+                                                        fontWeight: FontWeight.w600,
+                                                      ),
+                                                ),
+                                              ),
+                                              Padding(
+                                                padding: const EdgeInsets.fromLTRB(24, 0, 24, 16),
+                                                child: Text(
+                                                  '${state.items.length} ${state.items.length > 1 ? 'itens' : 'item'}',
+                                                  style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.6),
+                                                        fontWeight: FontWeight.w400,
+                                                      ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        SliverPadding(
+                                          padding: const EdgeInsets.fromLTRB(24, 16, 24, 16),
+                                          sliver: SliverToBoxAdapter(
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: TextField(
+                                                    controller: _counponController,
+                                                    cursorHeight: 24,
+                                                    textAlign: TextAlign.start,
+                                                    autocorrect: true,
+                                                    enableSuggestions: true,
+                                                    textInputAction: TextInputAction.next,
+                                                    keyboardType: TextInputType.name,
+                                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                          color: Theme.of(context).colorScheme.onBackground,
+                                                        ),
+                                                    decoration: InputDecoration(
+                                                      hintText: 'Cupom de desconto',
+                                                      hintStyle: TextStyle(
+                                                        color:
+                                                            Theme.of(context).colorScheme.onBackground.withOpacity(.5),
+                                                      ),
+                                                      border: OutlineInputBorder(
+                                                        borderRadius: BorderRadius.circular(12),
+                                                        borderSide: BorderSide.none,
+                                                      ),
+                                                      fillColor:
+                                                          Theme.of(context).colorScheme.onBackground.withOpacity(.05),
+                                                      filled: true,
+                                                      contentPadding:
+                                                          const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                                                      alignLabelWithHint: true,
+                                                      isDense: true,
+                                                      prefixIconConstraints: const BoxConstraints(maxWidth: 56),
+                                                      prefixIcon: Padding(
+                                                        padding: const EdgeInsets.only(left: 16, right: 12),
+                                                        child: AppSvgIconComponent(
+                                                          assetName: AppIcons.discountTicket,
+                                                          size: 28,
+                                                          color: Theme.of(context)
+                                                              .colorScheme
+                                                              .onBackground
+                                                              .withOpacity(.5),
+                                                        ),
+                                                      ),
+                                                    ),
+                                                    textAlignVertical: TextAlignVertical.center,
+                                                    onTapOutside: (_) => FocusScope.of(context).unfocus(),
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 16),
+                                                FilledButton(
+                                                  onPressed: () {
+                                                    FocusScope.of(context).unfocus();
+                                                  },
+                                                  style: FilledButton.styleFrom(
+                                                    backgroundColor: Theme.of(context).colorScheme.onBackground,
+                                                    shape: RoundedRectangleBorder(
+                                                      borderRadius: BorderRadius.circular(12),
+                                                    ),
+                                                    padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 22),
+                                                    elevation: 0,
+                                                  ),
+                                                  child: Text(
+                                                    'Aplicar',
+                                                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                                                          color: Theme.of(context).colorScheme.onPrimary,
+                                                          fontWeight: FontWeight.w500,
+                                                        ),
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
                                         SliverPadding(
                                           padding: const EdgeInsets.symmetric(horizontal: 24),
                                           sliver: SliverList.separated(
@@ -693,7 +813,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                                                       onPressed: () {
                                                                         context.pop();
                                                                         context.push(
-                                                                          '${AppRoutes.seller}/${user.id}',
+                                                                          '${AppRoutes.addAddress}/${user.id}',
                                                                         );
                                                                       },
                                                                       style: FilledButton.styleFrom(
@@ -926,22 +1046,23 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                         ),
                                       ),
                                       InkWell(
-                                        onTap: () {},
+                                        onTap: () {
+                                          context.push('${AppRoutes.orders}/${user.id}');
+                                        },
                                         child: Container(
                                           padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                           child: Row(
                                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                             children: [
-                                              AppSvgIconComponent(
+                                              const AppSvgIconComponent(
                                                 assetName: AppIcons.deliveryBox,
-                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                               ),
                                               const SizedBox(width: 12),
                                               Expanded(
                                                 child: Text(
                                                   'Meus pedidos',
                                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                                        color: Theme.of(context).colorScheme.onSurface,
                                                         fontWeight: FontWeight.w500,
                                                       ),
                                                 ),
@@ -949,7 +1070,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                               const SizedBox(width: 12),
                                               AppSvgIconComponent(
                                                 assetName: AppIcons.arrowRight,
-                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.7),
                                               ),
                                             ],
                                           ),
@@ -1069,7 +1190,7 @@ class _HomePageState extends State<HomePage> with RouteAware, AutomaticKeepAlive
                                                                 onPressed: () {
                                                                   context.pop();
                                                                   context.push(
-                                                                    '${AppRoutes.seller}/${user.id}',
+                                                                    '${AppRoutes.addAddress}/${user.id}',
                                                                   );
                                                                 },
                                                                 style: FilledButton.styleFrom(

@@ -37,6 +37,17 @@ class SupabaseOrderRepository implements HomeOrderRepository {
             'quantity': item['quantity'],
             'price': item['price'],
           });
+
+          final currentStock = await client
+              .from('product')
+              .select('stock_quantity')
+              .eq('id', item['id'])
+              .single()
+              .then((value) => value['stock_quantity'] as int);
+
+          await client.from('product').update({
+            'stock_quantity': currentStock - item['quantity'],
+          }).eq('id', item['id']);
         }
       }
     } on DtoFailure catch (_) {

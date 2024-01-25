@@ -416,7 +416,7 @@ class _PersonalInformationPageState extends State<PersonalInformationPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
-                      ElevatedButton(
+                      FilledButton(
                         onPressed: () {
                           FocusScope.of(context).unfocus();
                           _bloc.add(

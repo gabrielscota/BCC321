@@ -241,22 +241,23 @@ class _SellerPageState extends State<SellerPage> with RouteAware {
                                 ),
                               ),
                               InkWell(
-                                onTap: () {},
+                                onTap: () {
+                                  context.push('${AppRoutes.sellerCoupons}/${widget.sellerId}');
+                                },
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
                                   child: Row(
                                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                     children: [
-                                      AppSvgIconComponent(
+                                      const AppSvgIconComponent(
                                         assetName: AppIcons.discountTicket,
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
                                         child: Text(
                                           'Cupons de desconto',
                                           style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                                                color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                                color: Theme.of(context).colorScheme.onSurface,
                                                 fontWeight: FontWeight.w500,
                                               ),
                                         ),
@@ -264,7 +265,7 @@ class _SellerPageState extends State<SellerPage> with RouteAware {
                                       const SizedBox(width: 12),
                                       AppSvgIconComponent(
                                         assetName: AppIcons.arrowRight,
-                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.5),
+                                        color: Theme.of(context).colorScheme.onSurface.withOpacity(.7),
                                       ),
                                     ],
                                   ),
